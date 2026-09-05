@@ -1,0 +1,293 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE SUPERHERO UNIVERSE — global design system
+   Dark · cinematic · futuristic. Components add their own scoped styles.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* base */
+  --bg-0: #04060b;
+  --bg-1: #070a12;
+  --bg-2: #0b101c;
+
+  /* surfaces */
+  --panel: rgba(13, 18, 30, 0.55);
+  --panel-border: rgba(148, 163, 184, 0.16);
+
+  /* text */
+  --text-0: #f2f5fa;
+  --text-1: #aeb8c9;
+  --text-2: #64748b;
+
+  /* global UI accent (cyan) — universe accents override per-component */
+  --accent: #38e1ff;
+  --accent-soft: rgba(56, 225, 255, 0.14);
+  --marvel: #ff3d4e;
+  --dc: #2f7cff;
+  --cosmic: #a855f7;
+  --villain: #ff7a29;
+
+  /* type */
+  --font-display: 'Orbitron', 'Rajdhani', 'Segoe UI', sans-serif;
+  --font-ui: 'Rajdhani', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* layout */
+  --gutter: 1.25rem;
+  --radius: 14px;
+}
+
+/* ───────────────────────────── reset ───────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* atmospheric background: deep glows + faint grid + grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 40% at 12% -5%, rgba(47, 124, 255, 0.1), transparent 60%),
+    radial-gradient(50% 35% at 95% 8%, rgba(168, 85, 247, 0.08), transparent 60%),
+    radial-gradient(45% 30% at 50% 110%, rgba(56, 225, 255, 0.05), transparent 60%);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: rgba(56, 225, 255, 0.28);
+  color: #ffffff;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+  border: 2px solid var(--bg-0);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.38);
+}
+
+/* ─────────────────────── focus & a11y ──────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ──────────────────────── layout utils ─────────────────────────── */
+
+.container {
+  width: min(1200px, 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+/* ──────────────────────── typography ───────────────────────────── */
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.kicker::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+/* ─────────────────────────── buttons ───────────────────────────── */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8em 1.7em;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    filter 0.2s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  color: #041018;
+  background: linear-gradient(135deg, #4de1ff 0%, #2f6bff 100%);
+  box-shadow: 0 6px 22px -8px rgba(56, 160, 255, 0.55);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 10px 30px -8px rgba(56, 160, 255, 0.7);
+}
+
+.btn-ghost {
+  color: var(--text-0);
+  background: rgba(148, 163, 184, 0.05);
+  border-color: var(--panel-border);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(56, 225, 255, 0.5);
+  box-shadow: 0 0 18px rgba(56, 225, 255, 0.15);
+}
+
+.btn-lg {
+  padding: 1em 2.2em;
+  font-size: 0.95rem;
+}
+
+.btn-sm {
+  padding: 0.55em 1.1em;
+  font-size: 0.74rem;
+}
+
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─────────────────── reduced motion support ────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  [appReveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ─────────────────────── reveal animation ──────────────────────── */
+
+[appReveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[appReveal].revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* ─────────────────────── safe overflow ─────────────────────────── */
+
+/* images & long words must never cause horizontal overflow on mobile */
+img {
+  max-width: 100%;
+}
