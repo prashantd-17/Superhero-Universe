@@ -1,5 +1,13 @@
 import { AsyncPipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { APP_CONFIG } from '../../core/config/app-config';
 import { AssetService } from '../../core/services/asset/asset.service';
@@ -69,15 +77,15 @@ import { HOME_CONTENT } from './home-content';
           <app-section-header kicker="Most wanted" title="Trending characters" />
           <a class="more-link" routerLink="/characters">View all &#8594;</a>
         </div>
-        @let heroes = heroes$ | async;
+        @let heroes = (heroes$ | async);
         @let loading = (loading$ | async) ?? false;
-        @let error = error$ | async;
+        @let error = (error$ | async);
         @if (loading && !heroes?.length) {
           <app-skeleton-grid [count]="4" variant="character" />
         } @else if (error && !heroes?.length) {
           <p class="soft-error">
-            The character archive is unreachable right now — trending files will appear when the
-            link is restored.
+            The character archive is unreachable right now — trending files will appear
+            when the link is restored.
           </p>
         } @else {
           <div class="trend-row">
@@ -173,7 +181,7 @@ import { HOME_CONTENT } from './home-content';
           />
           <a class="more-link" routerLink="/products">Visit the shop &#8594;</a>
         </div>
-        @let products = products$ | async;
+        @let products = (products$ | async);
         @if (products?.length) {
           <div class="product-row">
             @for (product of featuredFor(products); track product.id) {
@@ -202,8 +210,8 @@ import { HOME_CONTENT } from './home-content';
         <p class="kicker">The signal continues</p>
         <h2 class="final-title">The universe is bigger on Instagram</h2>
         <p class="final-sub">
-          Daily character spotlights, movie breakdowns, comic lore and facts — join
-          {{ config.brand.followersLabel }} fans following {{ config.brand.instagramHandle }}.
+          Daily character spotlights, movie breakdowns, comic lore and facts —
+          join {{ config.brand.followersLabel }} fans following {{ config.brand.instagramHandle }}.
         </p>
         <a
           class="btn btn-primary btn-lg"
@@ -247,19 +255,19 @@ import { HOME_CONTENT } from './home-content';
 
     .trend-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 1.1rem;
     }
 
     @media (min-width: 700px) {
       .trend-row {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
     @media (min-width: 1100px) {
       .trend-row {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -299,7 +307,7 @@ import { HOME_CONTENT } from './home-content';
 
     @media (min-width: 640px) {
       .content-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -315,24 +323,13 @@ import { HOME_CONTENT } from './home-content';
       background: rgba(10, 14, 22, 0.5);
       text-decoration: none;
       color: var(--text-0);
-      transition:
-        transform 0.22s ease,
-        border-color 0.22s ease,
-        box-shadow 0.22s ease;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
     }
 
-    .content-tile.accent-marvel {
-      --tile-accent: #ff3d4e;
-    }
-    .content-tile.accent-dc {
-      --tile-accent: #2f7cff;
-    }
-    .content-tile.accent-cosmic {
-      --tile-accent: #a855f7;
-    }
-    .content-tile.accent-accent {
-      --tile-accent: #38e1ff;
-    }
+    .content-tile.accent-marvel { --tile-accent: #ff3d4e; }
+    .content-tile.accent-dc { --tile-accent: #2f7cff; }
+    .content-tile.accent-cosmic { --tile-accent: #a855f7; }
+    .content-tile.accent-accent { --tile-accent: #38e1ff; }
 
     .content-tile:hover {
       transform: translateY(-3px);
@@ -377,9 +374,7 @@ import { HOME_CONTENT } from './home-content';
       text-decoration: none;
       color: var(--text-0);
       overflow: hidden;
-      transition:
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .battle-teaser:hover {
@@ -464,19 +459,13 @@ import { HOME_CONTENT } from './home-content';
 
     .product-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 1.1rem;
-    }
-
-    @media (min-width: 560px) {
-      .product-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
     }
 
     @media (min-width: 1000px) {
       .product-row {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -529,6 +518,7 @@ export class HomePageComponent {
   private readonly facts = inject(FactService);
   private readonly seo = inject(SeoService);
   private readonly asset = inject(AssetService);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly heroes$ = this.characters.heroes$;
@@ -542,7 +532,7 @@ export class HomePageComponent {
 
   constructor() {
     this.seo.apply({
-      title: 'The Superhero Universe — Marvel & DC Fan Guide',
+      title: 'The official digital home of the superhero fandom',
       description:
         'Explore 560+ Marvel & DC character files, movies and TV, comics lore, the battle arena and the fan shop — from @thesuperhero_universe.',
       path: '/',
@@ -557,8 +547,12 @@ export class HomePageComponent {
       ],
     });
 
-    this.characters.load();
-    this.products.load();
+    afterNextRender(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.characters.load();
+        this.products.load();
+      }
+    });
   }
 
   protected trendingFor(heroes: Superhero[] | null | undefined): Superhero[] {

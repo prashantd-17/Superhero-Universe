@@ -34,24 +34,6 @@ export const routes: Routes = [
       import('./features/movies/movies-page.component').then((m) => m.MoviesPageComponent),
   },
   {
-    path: 'series',
-    data: { catalogKind: 'series' },
-    loadComponent: () =>
-      import('./features/movies/movies-page.component').then((m) => m.MoviesPageComponent),
-  },
-  {
-    path: 'universes/marvel',
-    data: { universe: 'marvel' },
-    loadComponent: () =>
-      import('./features/universes/universe-page.component').then((m) => m.UniversePageComponent),
-  },
-  {
-    path: 'universes/dc',
-    data: { universe: 'dc' },
-    loadComponent: () =>
-      import('./features/universes/universe-page.component').then((m) => m.UniversePageComponent),
-  },
-  {
     path: 'movies/:slug',
     loadComponent: () =>
       import('./features/movies/movie-detail-page.component').then(
@@ -78,11 +60,15 @@ export const routes: Routes = [
   {
     path: 'instagram',
     loadComponent: () =>
-      import('./features/instagram/instagram-page.component').then((m) => m.InstagramPageComponent),
+      import('./features/instagram/instagram-page.component').then(
+        (m) => m.InstagramPageComponent,
+      ),
   },
   {
     path: '**',
     loadComponent: () =>
-      import('./shared/components/not-found/not-found.component').then((m) => m.NotFoundComponent),
+      import('./shared/components/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent,
+      ),
   },
 ];

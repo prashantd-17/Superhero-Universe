@@ -1,8 +1,12 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Product, ProductCategory, PRODUCT_CATEGORY_LABELS } from '../../../core/models/product';
+import {
+  Product,
+  ProductCategory,
+  PRODUCT_CATEGORY_LABELS,
+} from '../../../core/models/product';
 import { TrackDirective } from '../../directives/track.directive';
-import { BadgeComponent } from '../badge/badge.component';
+import { BadgeComponent, BadgeVariant } from '../badge/badge.component';
 import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.component';
 
 /** Affiliate product card. CTAs leave the site — no payments here. */
@@ -61,8 +65,6 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
   styles: `
     :host {
       display: block;
-      min-width: 0;
-      max-width: 100%;
     }
 
     .card {
@@ -85,12 +87,12 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
       box-shadow: 0 16px 36px -18px var(--card-glow, rgba(56, 225, 255, 0.35));
     }
 
-    .card.u-marvel:hover {
+    :host(.u-marvel) .card:hover {
       --card-accent: rgba(255, 61, 78, 0.45);
       --card-glow: rgba(255, 61, 78, 0.35);
     }
 
-    .card.u-dc:hover {
+    :host(.u-dc) .card:hover {
       --card-accent: rgba(47, 124, 255, 0.45);
       --card-glow: rgba(47, 124, 255, 0.35);
     }
@@ -111,13 +113,13 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
         linear-gradient(160deg, #0b1120, #070a12);
     }
 
-    .card.u-marvel .art {
+    :host(.u-marvel) .art {
       background:
         radial-gradient(120% 100% at 50% 0%, rgba(255, 61, 78, 0.14), transparent 60%),
         linear-gradient(160deg, #170b10, #070a12);
     }
 
-    .card.u-dc .art {
+    :host(.u-dc) .art {
       background:
         radial-gradient(120% 100% at 50% 0%, rgba(47, 124, 255, 0.14), transparent 60%),
         linear-gradient(160deg, #0a1020, #070a12);
@@ -148,13 +150,7 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
       text-transform: uppercase;
     }
 
-    .media app-smart-image {
-      position: absolute;
-      inset: 0;
-    }
-
     .body {
-      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 0.55rem;
@@ -164,15 +160,12 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
 
     .meta {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
     }
 
     .char {
-      min-width: 0;
-      max-width: 100%;
       font-family: var(--font-ui);
       font-weight: 600;
       font-size: 0.75rem;
@@ -204,7 +197,6 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
 
     .price-row {
       display: flex;
-      flex-wrap: wrap;
       align-items: baseline;
       gap: 0.55rem;
       margin-top: auto;
@@ -235,10 +227,6 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
 
     .btn-block {
       width: 100%;
-      min-width: 0;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      text-align: center;
       justify-content: center;
     }
 
@@ -286,7 +274,9 @@ export class ProductCardComponent {
   }
 
   get wasPrice(): string {
-    return this.product?.originalPrice != null ? `$${this.product.originalPrice.toFixed(2)}` : '';
+    return this.product?.originalPrice != null
+      ? `$${this.product.originalPrice.toFixed(2)}`
+      : '';
   }
 
   get savePct(): number {

@@ -1,15 +1,19 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  PLATFORM_ID,
+  inject,
+} from '@angular/core';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CharacterService } from '../../core/services/character/character-service';
 import { Superhero, UniverseId } from '../../core/models/superhero';
 import { SeoService } from '../../core/services/seo/seo.service';
 import { CharacterCardComponent } from '../../shared/components/character-card/character-card.component';
-import {
-  FilterChipsComponent,
-  ChipOption,
-} from '../../shared/components/filter-chips/filter-chips.component';
+import { FilterChipsComponent, ChipOption } from '../../shared/components/filter-chips/filter-chips.component';
 import { SkeletonGridComponent } from '../../shared/components/skeleton-grid/skeleton-grid.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
@@ -40,11 +44,9 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
         <p class="subtitle">
           Search the complete archive — heroes, villains and everyone in between.
         </p>
-        @let allHeroes = heroes$ | async;
+        @let allHeroes = (heroes$ | async);
         @if (allHeroes?.length) {
-          <p class="count">
-            {{ filteredCount(allHeroes) }} of {{ allHeroes?.length ?? 0 }} characters
-          </p>
+          <p class="count">{{ filteredCount(allHeroes) }} of {{ allHeroes?.length ?? 0 }} characters</p>
         }
       </div>
     </section>
@@ -53,21 +55,9 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
       <div class="controls">
         <form class="search" role="search" (submit)="$event.preventDefault()">
           <label class="sr-only" for="char-search">Search characters</label>
-          <svg
-            class="search-icon"
-            viewBox="0 0 24 24"
-            width="18"
-            height="18"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
             <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2" />
-            <path
-              d="m15.5 15.5 5 5"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
+            <path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
           <input
             id="char-search"
@@ -101,9 +91,9 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
         </div>
       </div>
 
-      @let heroes = heroes$ | async;
+      @let heroes = (heroes$ | async);
       @let loading = (loading$ | async) ?? false;
-      @let error = error$ | async;
+      @let error = (error$ | async);
       @let filtered = filterHeroes(heroes);
       @let visible = visibleSlice(filtered);
 
@@ -142,7 +132,7 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
       }
 
       <p class="source-note">
-        @let label = sourceLabel$ | async;
+        @let label = (sourceLabel$ | async);
         @if (label) {
           Character data: {{ label }} · Images © their respective owners.
         }
@@ -194,9 +184,7 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
       border-radius: 12px;
       background: rgba(148, 163, 184, 0.07);
       padding: 0.5rem 0.6rem 0.5rem 1rem;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .search:focus-within {
@@ -250,19 +238,19 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 1.1rem;
     }
 
     @media (min-width: 700px) {
       .grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
     @media (min-width: 1100px) {
       .grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -319,6 +307,7 @@ export class CharactersPageComponent {
   private readonly seo = inject(SeoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly heroes$ = this.characters.heroes$;
@@ -354,23 +343,24 @@ export class CharactersPageComponent {
     });
 
     // Deep links: /characters?q=batman&universe=dc
-    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const q = typeof params['q'] === 'string' ? params['q'] : '';
-      const universe = params['universe'];
-      this.search = q;
-      this.universe =
-        universe === 'marvel' || universe === 'dc' || universe === 'other' ? universe : 'all';
-      this.visibleCount = 24;
-      this.seo.apply({
-        title: 'Marvel & DC Character Database',
-        description:
-          'Explore superhero character profiles, biographies, powers and comic-book connections from Marvel, DC and beyond.',
-        path: '/characters',
-        noindex: !!q || this.universe !== 'all',
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const q = typeof params['q'] === 'string' ? params['q'] : '';
+        const universe = params['universe'];
+        this.search = q;
+        this.universe =
+          universe === 'marvel' || universe === 'dc' || universe === 'other'
+            ? universe
+            : 'all';
+        this.visibleCount = 24;
       });
-    });
 
-    this.characters.load();
+    afterNextRender(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.characters.load();
+      }
+    });
   }
 
   protected onSearchInput(event: Event): void {

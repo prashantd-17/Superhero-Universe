@@ -1,14 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { afterNextRender, ChangeDetectionStrategy, Component, PLATFORM_ID, inject } from '@angular/core';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { ProductService } from '../../core/services/product/product-service';
 import { SeoService } from '../../core/services/seo/seo.service';
 import { Product, ProductCategory, PRODUCT_CATEGORY_LABELS } from '../../core/models/product';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { SectionHeaderComponent } from '../../shared/components/section-header/section-header.component';
-import {
-  FilterChipsComponent,
-  ChipOption,
-} from '../../shared/components/filter-chips/filter-chips.component';
+import { FilterChipsComponent, ChipOption } from '../../shared/components/filter-chips/filter-chips.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 type CategoryFilter = 'all' | ProductCategory;
@@ -32,26 +29,24 @@ type CategoryFilter = 'all' | ProductCategory;
       <div class="container">
         <p class="kicker">Fan shop</p>
         <h1 class="title-xl">Products &amp; collectibles</h1>
-        <p class="subtitle">Hand-picked figures, comics, posters and merch for serious fans.</p>
+        <p class="subtitle">
+          Hand-picked figures, comics, posters and merch for serious fans.
+        </p>
         <p class="disclosure">
-          Disclosure: some links are affiliate links — if you buy through them, the community may
-          earn a small commission at no extra cost to you.
+          Disclosure: some links are affiliate links — if you buy through them,
+          the community may earn a small commission at no extra cost to you.
         </p>
       </div>
     </section>
 
     <div class="container">
-      @let products = products$ | async;
+      @let products = (products$ | async);
 
       @if (products?.length) {
         @let featured = featuredList(products);
         @if (featured.length) {
           <section class="section" aria-labelledby="featured-title">
-            <app-section-header
-              kicker="Editor’s picks"
-              title="Featured drops"
-              headingId="featured-title"
-            />
+            <app-section-header kicker="Editor’s picks" title="Featured drops" />
             <div class="grid featured-grid">
               @for (product of featured; track product.id) {
                 <app-product-card [product]="product" />
@@ -61,11 +56,7 @@ type CategoryFilter = 'all' | ProductCategory;
         }
 
         <section class="section" aria-labelledby="all-title">
-          <app-section-header
-            kicker="The full shelf"
-            title="Browse everything"
-            headingId="all-title"
-          />
+          <app-section-header kicker="The full shelf" title="Browse everything" />
           <app-filter-chips
             label="Filter by category"
             class="cat-filter"
@@ -137,19 +128,13 @@ type CategoryFilter = 'all' | ProductCategory;
 
     .grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 1.1rem;
-    }
-
-    @media (min-width: 560px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
     }
 
     @media (min-width: 1000px) {
       .grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -170,6 +155,7 @@ type CategoryFilter = 'all' | ProductCategory;
 export class ProductsPageComponent {
   private readonly productsService = inject(ProductService);
   private readonly seo = inject(SeoService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly products$ = this.productsService.products$;
   protected category: CategoryFilter = 'all';
@@ -184,8 +170,12 @@ export class ProductsPageComponent {
         'Figures, comics, posters and superhero merch — hand-picked for the @thesuperhero_universe community.',
       path: '/products',
     });
-    this.productsService.load();
-    this.buildCategoryOptions();
+    afterNextRender(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.productsService.load();
+        this.buildCategoryOptions();
+      }
+    });
   }
 
   private buildCategoryOptions(): void {

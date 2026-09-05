@@ -41,12 +41,3 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
-
-# Browser regression artifacts
-/test-results
-/playwright-report
-
-# Local deployment settings
-.env
-.env.*
-!.env.example

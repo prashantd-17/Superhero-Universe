@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { CharacterDataSource, CharacterDataset } from '../../data-access/character/character-data-source';
 import {
-  CharacterDataSource,
-  CharacterDataset,
-} from '../../data-access/character/character-data-source';
-import { Superhero, UniverseId, powerTotal } from '../../models/superhero';
+  Superhero,
+  UniverseId,
+  powerTotal,
+} from '../../models/superhero';
 import { StateStore } from '../../state/state-store';
 
 /** Feature state for the whole character domain (one cached dataset). */
@@ -24,17 +25,23 @@ export class CharacterService {
 
   readonly state$ = this.store.state$;
 
-  readonly heroes$: Observable<Superhero[]> = this.state$.pipe(map((s) => s.data?.heroes ?? []));
+  readonly heroes$: Observable<Superhero[]> = this.state$.pipe(
+    map((s) => s.data?.heroes ?? []),
+  );
 
-  readonly loading$: Observable<boolean> = this.state$.pipe(map((s) => s.status === 'loading'));
+  readonly loading$: Observable<boolean> = this.state$.pipe(
+    map((s) => s.status === 'loading'),
+  );
 
   readonly error$: Observable<string | null> = this.state$.pipe(
     map((s) => (s.status === 'error' ? s.error : null)),
   );
 
-  readonly sourceLabel$: Observable<string> = this.state$.pipe(map((s) => s.data?.label ?? ''));
+  readonly sourceLabel$: Observable<string> = this.state$.pipe(
+    map((s) => s.data?.label ?? ''),
+  );
 
-  /** Idempotent load — safe on SSR and in the browser. */
+  /** Idempotent load — safe to call from any feature page (browser only). */
   load(): void {
     if (this.store.status === 'loading' || this.store.status === 'success') {
       return;
@@ -79,9 +86,7 @@ export class CharacterService {
     ].map(byName);
     const found = curated.filter((h): h is Superhero => h !== undefined);
     if (found.length >= 6) return found.slice(0, 10);
-    return [...heroes]
-      .sort((a, b) => powerTotal(b.powerstats) - powerTotal(a.powerstats))
-      .slice(0, 10);
+    return [...heroes].sort((a, b) => powerTotal(b.powerstats) - powerTotal(a.powerstats)).slice(0, 10);
   }
 
   countByUniverse(universe: UniverseId, heroes: readonly Superhero[]): number {

@@ -13,14 +13,12 @@ import { MovieDetailPageComponent } from './movie-detail-page.component';
 describe('Movie pages', () => {
   let seo: jasmine.SpyObj<SeoService>;
   beforeEach(() => {
-    seo = jasmine.createSpyObj<SeoService>('SeoService', ['apply', 'absoluteUrl']);
-    seo.absoluteUrl.and.callFake((path) => `https://universe.example.com${path}`);
+    seo = jasmine.createSpyObj<SeoService>('SeoService', ['apply']);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
           { path: 'movies', component: MoviesPageComponent },
           { path: 'movies/:slug', component: MovieDetailPageComponent },
-          { path: 'series', component: MoviesPageComponent, data: { catalogKind: 'series' } },
         ]),
         { provide: APP_CONFIG, useValue: defaultAppConfig },
         { provide: SeoService, useValue: seo },
@@ -96,14 +94,14 @@ describe('Movie pages', () => {
 
   it('keeps animation and series discoverable and clears an empty result', async () => {
     const harness = await RouterTestingHarness.create('/movies?kind=all&format=animation');
-    expect(harness.routeNativeElement?.querySelectorAll('app-movie-card').length).toBe(24);
+    expect(harness.routeNativeElement?.querySelectorAll('app-movie-card').length).toBe(2);
     await harness.navigateByUrl('/movies?q=impossible-title-xyz', MoviesPageComponent);
     expect(harness.routeNativeElement?.textContent).toContain('Nothing on this shelf');
     const clear = harness.routeNativeElement?.querySelector<HTMLButtonElement>('.clear-btn');
     clear!.click();
     await harness.fixture.whenStable();
     harness.detectChanges();
-    expect(harness.routeNativeElement?.querySelector('.count')?.textContent).toContain('353');
+    expect(harness.routeNativeElement?.querySelector('.count')?.textContent).toContain('161');
     expect(harness.routeNativeElement?.querySelectorAll('app-movie-card').length).toBe(24);
   });
 });

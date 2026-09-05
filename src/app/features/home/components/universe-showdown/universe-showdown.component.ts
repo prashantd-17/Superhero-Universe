@@ -22,29 +22,23 @@ import { TrackDirective } from '../../../../shared/directives/track.directive';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="panels">
-      <a class="panel panel-marvel" routerLink="/universes/marvel" appTrack="showdown_marvel">
+      <a class="panel panel-marvel" routerLink="/characters" [queryParams]="{ universe: 'marvel' }" appTrack="showdown_marvel">
         <span class="panel-glow" aria-hidden="true"></span>
         <span class="panel-kicker">Universe 01</span>
         <span class="panel-name">Marvel</span>
         <span class="panel-count">{{ marvelCount() }}</span>
-        <span class="panel-desc"
-          >From the street level to the cosmic firmament — Spider-Man, Iron Man, the X-Men, the
-          Avengers and the gods of Earth-616.</span
-        >
+        <span class="panel-desc">From the street level to the cosmic firmament — Spider-Man, Iron Man, the X-Men, the Avengers and the gods of Earth-616.</span>
         <span class="panel-cta">Explore Marvel &#8594;</span>
       </a>
 
       <div class="vs" aria-hidden="true">VS</div>
 
-      <a class="panel panel-dc" routerLink="/universes/dc" appTrack="showdown_dc">
+      <a class="panel panel-dc" routerLink="/characters" [queryParams]="{ universe: 'dc' }" appTrack="showdown_dc">
         <span class="panel-glow" aria-hidden="true"></span>
         <span class="panel-kicker">Universe 02</span>
         <span class="panel-name">DC</span>
         <span class="panel-count">{{ dcCount() }}</span>
-        <span class="panel-desc"
-          >The world’s finest — Batman, Superman, Wonder Woman and the entire Justice League legacy,
-          from Golden Age to now.</span
-        >
+        <span class="panel-desc">The world’s finest — Batman, Superman, Wonder Woman and the entire Justice League legacy, from Golden Age to now.</span>
         <span class="panel-cta">Explore DC &#8594;</span>
       </a>
     </div>
@@ -76,10 +70,7 @@ import { TrackDirective } from '../../../../shared/directives/track.directive';
       color: var(--text-0);
       text-decoration: none;
       overflow: hidden;
-      transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
 
     .panel:hover,
@@ -209,13 +200,15 @@ export class UniverseShowdownComponent {
     afterNextRender(() => {
       if (isPlatformBrowser(this.platformId)) {
         this.characters.load();
-        this.characters.heroes$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: (heroes) => {
-            this.marvel = this.characters.countByUniverse('marvel', heroes) || null;
-            this.dc = this.characters.countByUniverse('dc', heroes) || null;
-          },
-          error: () => undefined,
-        });
+        this.characters.heroes$
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (heroes) => {
+              this.marvel = this.characters.countByUniverse('marvel', heroes) || null;
+              this.dc = this.characters.countByUniverse('dc', heroes) || null;
+            },
+            error: () => undefined,
+          });
       }
     });
   }

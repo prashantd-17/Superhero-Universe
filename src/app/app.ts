@@ -45,7 +45,6 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 
     .page-main > * {
       width: 100%;
-      min-width: 0;
     }
   `,
 })

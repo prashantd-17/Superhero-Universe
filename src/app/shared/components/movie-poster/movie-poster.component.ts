@@ -25,9 +25,7 @@ import { SmartImageComponent } from '../smart-image/smart-image.component';
       [tone]="movie.universe === 'other' ? 'cosmic' : movie.universe"
       [loading]="eager ? 'eager' : 'lazy'"
       fit="contain"
-      [unavailableLabel]="
-        movie.posterUrl ? 'Artwork temporarily unavailable' : 'Artwork not available'
-      "
+      unavailableLabel="Poster temporarily unavailable"
     />
   `,
   styles: `

@@ -1,157 +1,149 @@
-# Screen catalog and online artwork
+# Movie catalog and online posters
 
-## Coverage — reviewed 5 September 2026
+## Coverage (reviewed 5 September 2026)
 
-The archive has **353 entries**:
+The archive has **161 entries**:
 
-| Group                                              | Entries |
-| -------------------------------------------------- | ------: |
-| Marvel live-action film entries                    |      99 |
-| DC live-action film entries                        |      56 |
-| Retained animated film (_Across the Spider-Verse_) |       1 |
-| Marvel live-action and animated series             |      94 |
-| DC live-action and animated series                 |     101 |
-| Retained other series (_The Boys_, _Invincible_)   |       2 |
+- **99 Marvel live-action film entries:** all 38 released MCU features; all 13
+  Fox-era X-Men/Wolverine/Deadpool features; the five Raimi/Webb Spider-Man films;
+  all six Sony Spider-Man Universe films; Blade, Fantastic Four, Punisher,
+  Ghost Rider, Hulk, Daredevil, Elektra, Howard the Duck and other legacy films;
+  standalone TV movies and the three Nicholas Hammond Spider-Man film releases;
+  plus the Men in Black, Kick-Ass and Kingsman imprint adaptations/sequels.
+- **56 DC live-action film entries:** theatrical features from _Superman and the
+  Mole Men_ to _Supergirl_ (2026), the DCEU, the new DCU, classic Batman/Superman
+  runs, standalone films, Vertigo/WildStorm/Paradox adaptations, two standalone
+  TV movies, and the separately released Donner/Snyder alternate cuts.
+- The **original selected animation/TV shelf** remains: _Across the Spider-Verse_,
+  _Daredevil_, _Loki_, _Watchmen_, _The Boys_ and _Invincible_. This is **not** an
+  exhaustive animation or television-series catalog.
 
-That is **156 films and 197 series**. The default `/movies` view now includes
-**all types and styles**; series are not silently hidden behind film/live-action
-filters. `/series` is a dedicated TV archive that also includes both styles.
+“Film entries” includes TV films and two distinct alternate cuts; it does not mean
+155 different theatrical stories. The default view shows live-action films.
+Change Type/Style or choose **Clear filters** to browse the entire shelf.
 
-### Films
+### Scope and identity rules
 
-The 155 live-action film entries retain the released MCU and DCEU/DCU features,
-X-Men/Wolverine films, Raimi/Webb Spider-Man films, Sony's Spider-Man Universe,
-Blade, Punisher, Fantastic Four, Ghost Rider and other Marvel legacy films;
-classic Batman/Superman runs, DC standalone films, TV movies, imprint adaptations
-and two distinct alternate cuts. "Film entries" includes TV movies and cuts,
-not 155 different theatrical stories.
+- Released, licensed narrative features and standalone TV movies are in scope.
+  Shorts, theatrical serials, documentaries, unaired pilots, unlicensed versions,
+  and most episode-only video compilations are not. The Hammond Spider-Man
+  compilations are included because they had their own international theatrical
+  releases. The _Incredible Hulk_ and _Flash_ series' other repackaged episodes
+  are not counted as additional standalone features.
+- Unreleased projects such as _Batgirl_ and the 1994 _Fantastic Four_ are not
+  represented as released films. Announced future releases are not added merely
+  because their planned release year matches the current year.
+- Dates use **first release year**, including festival premieres. Notes explain
+  the later wide releases for _Superman II_ (1980/1981), _Ghost Rider: Spirit of
+  Vengeance_ (2011/2012), _Kingsman_ (2014/2015), and _V for Vendetta_ (2005/2006).
+- All original 28 detail slugs are preserved. Namesakes use disambiguated slugs:
+  `daredevil` is the series; `daredevil-2003` is the film. Likewise `watchmen` and
+  `watchmen-2009`, `superman-1978` and `superman-2025`.
+- Publisher is not continuity. Marvel/DC **imprints have separate collections**;
+  the interface never claims _Men in Black_, _Kingsman_, _RED_, etc. are MCU/DCU
+  films. “Collection” is a browsing group, not a shared-universe assertion.
+- Principal cast is representative, not every credited performer. Descriptions
+  are original editorial summaries. Ratings, runtimes, box office and exact
+  release dates are omitted rather than guessed.
 
-### Television
+## Sources
 
-The expanded TV catalog includes:
+Every title stores an exact, disambiguated English Wikipedia article and exposes
+it as a source link on its detail page. Coverage was cross-checked against:
 
-- Marvel's classic live-action series, Agents of S.H.I.E.L.D., Agent Carter,
-  Netflix-era series, Legion, The Gifted, Runaways, Cloak & Dagger, Helstrom and
-  the released Disney+ live-action series through Wonder Man, plus Spider-Noir.
-- DC classics, Smallville, the Arrowverse, Gotham, Titans, Doom Patrol, Swamp
-  Thing, Stargirl, Superman & Lois, Peacemaker, The Penguin and Lanterns.
-- Classic animated adaptations, the DC Animated Universe, Young Justice,
-  Teen Titans, Harley Quinn, Creature Commandos, Marvel Anime's four distinct
-  productions, X-Men ’97 and modern Marvel animation.
-- Preschool series and licensed publisher-imprint adaptations, including Big
-  Hero 6, Baymax!, Men in Black, Powers, Super Crooks, Lucifer, The Sandman,
-  Sweet Tooth and other Vertigo adaptations.
-- Some narrative web series and separately named broadcast anthologies. Their
-  notes distinguish original shows, segment series and repackaged stories.
+- Marvel's official film archive: https://www.marvel.com/movies
+- DC's official film archive: https://www.dc.com/movies
+- Marvel filmography (including imprints and TV movies):
+  https://en.wikipedia.org/wiki/List_of_films_based_on_Marvel_Comics_publications
+- DC filmography (including imprints and TV movies):
+  https://en.wikipedia.org/wiki/List_of_films_based_on_DC_Comics_publications
 
-This is a broad **released, scripted television catalog**, not a list of every
-trailer, promotional video, documentary, motion comic, special, unmade pilot or
-announced future project. TV is not limited to MCU/DCU continuity. The original
-five series and all original 28 deep links remain available.
+The 2026 releases were also checked against the current publisher listings. The
+reference links allow an editor to verify or amend individual credits without
+searching for an ambiguous title.
 
-## Identity and credit rules
+## What “online posters” means
 
-- Preserve existing slugs. Namesakes are disambiguated: `daredevil` is the 2015
-  series; `daredevil-2003` is the film. Likewise `watchmen` / `watchmen-2009`,
-  `the-flash` / `the-flash-series`, and `batman-1966` / `batman-1966-series`.
-- Years are **first release/broadcast years**, including premieres and pilot
-  broadcasts. Notes explain _The Incredible Hulk_ (1977 pilot / 1978 weekly
-  series), _Wolverine and the X-Men_ (2008 / 2009 US), _Superman II_ (1980/1981),
-  _Kingsman_ (2014/2015) and _V for Vendetta_ (2005/2006).
-- Principal casts are representative, not every credited performer. Unknown
-  series creator/developer credits are omitted, never replaced with a guessed
-  person or a comic character's creator. Some original-language anime casts are
-  explicitly identified.
-- Publisher and continuity are different. Imprints have their own collection;
-  these adaptations are not automatically MCU/DCU stories. Toei/Marvel
-  collaborations are explicitly identified rather than described as Avengers
-  adaptations. Television-origin properties and broadcast repackagings have notes.
-- Announced/unreleased projects such as VisionQuest and unmade pilots such as
-  Marvel's Most Wanted are not presented as released series. The 1994 Fantastic
-  Four and Batgirl films remain excluded as unreleased.
-- Descriptions are original editorial summaries. No guessed ratings, runtimes,
-  complete episode counts or current streaming availability are published.
+The app no longer creates text-only pretend posters. Both cards and detail pages
+render **real release artwork** from verified HTTPS URLs:
 
-## References
+1. Prefer a verified public studio image when available (`studio-posters.ts`).
+2. Otherwise use the movie's verified Wikimedia artwork (`movie-posters.ts`).
+3. After hydration, request **`GET /api/movie-posters`** once per browser session.
+   The Node server uses Wikimedia's public PageImages API to check for current
+   artwork for the exact catalog article/season, never a fuzzy title search.
+4. A changed image replaces the initial image. If that image fails, the image
+   component tries the saved Wikimedia URL (deduplicated), then shows a clearly
+   labeled, layout-safe unavailable state. A failed optional refresh never empties
+   the movie list or removes trusted metadata.
 
-Every title links to its exact Wikipedia article. Coverage was checked against:
+Posters still require access to the external image host. **Saved URLs are not
+bundled offline image files.** If all image hosts are blocked, the title and movie
+information stay visible but the artwork cannot load. Some older releases use
+original horizontal posters or home-video covers; `object-fit: contain` preserves
+the entire artwork rather than cropping it into a different poster. The older
+_Justice League of America_ TV pilot currently has an authentic title card rather
+than a verified theatrical poster; its detail page explicitly notes this.
 
-- https://www.marvel.com/movies and https://www.marvel.com/tv-shows
-- https://www.dc.com/movies and https://www.dc.com/tv
-- https://en.wikipedia.org/wiki/List_of_films_based_on_Marvel_Comics_publications
-- https://en.wikipedia.org/wiki/List_of_films_based_on_DC_Comics_publications
-- https://en.wikipedia.org/wiki/List_of_television_series_based_on_Marvel_Comics_publications
-- https://en.wikipedia.org/wiki/List_of_television_series_based_on_DC_Comics_publications
+For series, a `posterPageTitle` override selects season-one artwork instead of a
+main-article logo. The original studio art remains preferred when the online
+Wikimedia image is unchanged. Logos from a refreshed API response are not allowed
+to replace a proper poster.
 
-Some series artwork was matched by exact title, year and language through the
-public TVmaze API. These entries retain an **Artwork reference (TVmaze)** link.
-TVmaze data attribution/license information: https://www.tvmaze.com/api#licensing
+### Caching and safety
 
-## Artwork behavior
+- Lookup batches contain at most 50 known titles (four requests for this catalog).
+- All users share a 24-hour in-memory cache and a single in-flight refresh. A
+  failed/partial refresh backs off for five minutes and keeps last-known URLs.
+- Each upstream request has a four-second deadline. The client has a ten-second
+  overall deadline. Initial rendering and SSR never wait on this request.
+- The endpoint accepts **no user-supplied upstream URL or movie search**. Image
+  responses are restricted to HTTPS raster images under Wikimedia's `en`/`commons`
+  paths, with no credentials, custom ports, script URLs or arbitrary hosts.
+- `source` reports `live`, `partial` or `snapshot`; `checkedAt` is the last
+  successful full API check, not a fabricated “last updated” date. A successful
+  lookup does not guarantee that every image is reachable on a user's network.
+- This is an **artwork refresh**, not automatic film discovery or a live ratings
+  feed. New films and credit corrections require a catalog update.
+- No API key, browser secret, third-party browser JSON request, or `localhost`
+  browser-facing backend URL is needed. Run the provided Node server in production.
 
-Cards and detail pages render real studio/Wikimedia artwork, with selected TVmaze
-posters where necessary. This is not generated movie imagery.
+Poster copyrights remain with their respective owners. The app links to its
+sources and identifies the artwork owners; it does not claim ownership or grant
+redistribution rights. Review the relevant studio/Wikimedia image terms for your
+deployment, especially commercial use. No generated movie artwork is used.
 
-1. A saved, verified artwork URL renders immediately, including in SSR markup.
-2. After hydration, a same-origin **`GET /api/movie-posters`** checks Wikimedia for
-   updated artwork using exact catalog titles, never a runtime fuzzy search.
-3. Studio artwork remains preferred when its Wiki fallback is unchanged.
-   Refresh failures preserve the existing data. If an image fails, the component
-   tries its distinct saved fallback once, then shows a labeled unavailable state.
-4. Some general TV articles expose only a logo or title card. Studio/season
-   posters are preferred, and landscape images from a new series lookup are not
-   allowed to overwrite a selected poster. Curated historical title cards remain
-   valid fallback artwork; `contain` preserves the whole image.
-5. The four Marvel Anime titles have distinct, fixed posters and separate TVmaze
-   references, even though their Wikipedia reference article is shared.
+## Maintenance
 
-**Saved URLs are not bundled offline images.** External image hosts must be
-reachable. The older _Justice League of America_ TV pilot has an archived title
-card, not a theatrical poster. _The Kid Super Power Hour with Shazam!_ currently
-has no verified series-specific artwork; its detail page states that rather than
-substituting an unrelated image. Some series use artwork from a later season;
-the displayed year remains the series' first broadcast year.
+- Film data is split into `mcu-movies.ts`, `marvel-movies.ts`, `dc-movies.ts`,
+  `imprint-movies.ts`, `tv-movies.ts` and `screen-extras.ts` under
+  `src/app/core/data-access/movie/data/`.
+- Add a unique slug, correct year, release format, director/creator, principal
+  cast, editorial synopsis, collection and exact source article. Provide verified
+  artwork before publishing; `artwork()` refuses a missing snapshot entry.
+- Check the original poster's source, not a search thumbnail or a guessed CDN ID.
+  Update `CATALOG_REVIEWED_AT` only after actually reviewing the catalog.
+- Refresh saved artwork URLs with:
 
-All artwork belongs to its respective rights holders. The app does not grant
-redistribution rights or claim ownership. Review provider/studio terms for your
-deployment, especially commercial use.
+  ```bash
+  npm run movies:refresh-posters
+  ```
 
-### Refresh limits and safety
+  The command refuses to overwrite the snapshot during an upstream failure or
+  partial response. Review the resulting diff before publishing. This command
+  does not alter cast, years or the reviewed date of the movie catalog.
 
-- At most 50 titles per lookup, with **four concurrent upstream requests** maximum.
-- One shared in-flight refresh and a 24-hour in-memory cache. Failed/partial
-  checks back off for five minutes and retain the previous URLs.
-- Four-second upstream timeouts and a ten-second client deadline. SSR does not
-  wait for any external API.
-- The endpoint accepts no arbitrary URL, hostname, title or API key. Live image
-  responses are restricted to HTTPS Wikimedia raster URLs without credentials
-  or custom ports. Curated studio/TVmaze mappings remain separate.
-- `source` is `live`, `partial` or `snapshot`. `checkedAt` represents a successful
-  full eligible API lookup, not proof that every CDN image is reachable.
-- This refresh updates artwork links, not textual credits or automatic release
-  discovery. No browser credentials are required.
-
-## Maintenance and checks
-
-Data is split into MCU, Marvel/DC films, TV movies, imprints, retained extras,
-Marvel/DC live-action series and Marvel/DC animated series under
-`src/app/core/data-access/movie/data/`.
-
-When adding a title, verify its release, unique slug, format, principal cast,
-source article and artwork. Keep first-air years separate from season artwork.
-Update the reviewed date only after reviewing content, and update coverage tests
-when intentionally changing the catalog scope.
+## Checks
 
 ```bash
-npm run movies:refresh-posters  # Updates Wiki film/series snapshots only after a full check
-npm run test:server             # Catalog, source/hash integrity, API cache/security and sitemap
-npm run test:ci                 # Components, filters, image handling and SEO; needs Chromium
-npm run test:browser            # Mobile overflow, series discovery, navigation and SSR
+npm run test:server
+npm run test:ci                  # Chrome/Chromium, or set CHROME_BIN
 npm run build
 ```
 
-The refresh command leaves both snapshots untouched if the upstream check fails
-or is partial. Studio/TVmaze URLs are not accidentally written into Wiki snapshots.
-Review the resulting diff before publishing.
-
-Deployment and Google Search Console steps: [search and SEO guide](search-and-seo.md).
+Tests cover coverage counts and legacy links, poster filename/hash integrity,
+corrected credits, live-action classification, filtering/search/sort, URL state,
+pagination, route reuse and SEO, cached-image hydration, image-source changes,
+failed refreshes, timeout behavior, request deduplication and unsafe provider URLs.
+No test requires a real external API response. Successful real-network checks
+should be performed separately in the deployment environment.

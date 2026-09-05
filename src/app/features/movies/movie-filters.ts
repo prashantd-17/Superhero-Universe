@@ -20,8 +20,8 @@ export interface MovieFilters {
 export const DEFAULT_MOVIE_FILTERS: Readonly<MovieFilters> = {
   search: '',
   universe: 'all',
-  kind: 'all',
-  format: 'all',
+  kind: 'film',
+  format: 'live-action',
   collection: 'all',
   sort: 'newest',
 };

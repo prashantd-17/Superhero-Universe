@@ -1,18 +1,17 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  ElementRef,
-  ViewChild,
-  HostListener,
-  Injector,
-  afterNextRender,
   Component,
   DestroyRef,
   OnDestroy,
   inject,
 } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { APP_CONFIG } from '../../../core/config/app-config';
@@ -74,21 +73,9 @@ interface NavLink {
 
         <form class="search" role="search" (submit)="onSearchSubmit($event)">
           <label class="sr-only" for="global-search">Search characters</label>
-          <svg
-            class="search-icon"
-            viewBox="0 0 24 24"
-            width="16"
-            height="16"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
             <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2" />
-            <path
-              d="m15.5 15.5 5 5"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
+            <path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
           <input
             id="global-search"
@@ -110,15 +97,7 @@ interface NavLink {
           appTrack="nav_instagram_follow"
         >
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" aria-hidden="true">
-            <rect
-              x="3"
-              y="3"
-              width="18"
-              height="18"
-              rx="5"
-              stroke="currentColor"
-              stroke-width="1.8"
-            />
+            <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8" />
             <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8" />
             <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
           </svg>
@@ -127,7 +106,6 @@ interface NavLink {
 
         <button
           type="button"
-          #mobileToggle
           class="menu-btn"
           [class.open]="mobileOpen"
           (click)="toggleMobile()"
@@ -140,17 +118,10 @@ interface NavLink {
       </div>
     </header>
 
-    <div
-      class="backdrop"
-      [class.visible]="mobileOpen"
-      (click)="closeMobile()"
-      aria-hidden="true"
-    ></div>
+    <div class="backdrop" [class.visible]="mobileOpen" (click)="closeMobile()" aria-hidden="true"></div>
 
     <nav
-      #drawerNode
       id="mobile-nav"
-      (keydown)="onDrawerKeydown($event)"
       class="drawer"
       [class.open]="mobileOpen"
       [attr.inert]="mobileOpen ? null : ''"
@@ -158,20 +129,9 @@ interface NavLink {
     >
       <div class="drawer-head">
         <span class="drawer-brand">Menu</span>
-        <button
-          type="button"
-          class="drawer-close"
-          #mobileClose
-          (click)="closeMobile()"
-          aria-label="Close menu"
-        >
+        <button type="button" class="drawer-close" (click)="closeMobile()" aria-label="Close menu">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-            <path
-              d="m6 6 12 12M18 6 6 18"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-            />
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
         </button>
       </div>
@@ -212,15 +172,7 @@ interface NavLink {
         appTrack="drawer_instagram_follow"
       >
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-          <rect
-            x="3"
-            y="3"
-            width="18"
-            height="18"
-            rx="5"
-            stroke="currentColor"
-            stroke-width="1.8"
-          />
+          <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8" />
           <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8" />
           <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
         </svg>
@@ -355,9 +307,7 @@ interface NavLink {
       background: rgba(148, 163, 184, 0.07);
       padding: 0.35rem 0.4rem 0.35rem 0.9rem;
       margin-left: auto;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .search:focus-within {
@@ -418,9 +368,7 @@ interface NavLink {
       font-weight: 700;
       font-size: 0.8rem;
       letter-spacing: 0.08em;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
       flex-shrink: 0;
     }
 
@@ -454,9 +402,7 @@ interface NavLink {
       width: 100%;
       border-radius: 2px;
       background: var(--text-0);
-      transition:
-        transform 0.25s ease,
-        opacity 0.2s ease;
+      transition: transform 0.25s ease, opacity 0.2s ease;
     }
 
     .menu-btn.open span:nth-child(1) {
@@ -503,14 +449,12 @@ interface NavLink {
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border-left: 1px solid var(--panel-border);
-      visibility: hidden;
-      transform: translateX(100%);
+      transform: translateX(105%);
       transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
       overflow-y: auto;
     }
 
     .drawer.open {
-      visibility: visible;
       transform: translateX(0);
     }
 
@@ -547,8 +491,6 @@ interface NavLink {
     }
 
     .drawer-search .search-input {
-      min-width: 0;
-      font-size: 1rem;
       width: 100%;
       flex: 1;
     }
@@ -571,10 +513,7 @@ interface NavLink {
       color: var(--text-1);
       text-decoration: none;
       border: 1px solid transparent;
-      transition:
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background 0.2s ease;
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
 
     .drawer-link:hover,
@@ -586,34 +525,11 @@ interface NavLink {
 
     .follow-big {
       display: flex;
-      overflow-wrap: anywhere;
-      text-align: center;
-      min-width: 0;
       justify-content: center;
       margin-top: auto;
     }
 
-    @media (min-width: 1200px) {
-      .nav-inner {
-        gap: 0.65rem;
-      }
-      .link {
-        font-size: 0.76rem;
-        letter-spacing: 0.06em;
-        padding-inline: 0.6em;
-      }
-      .search {
-        min-width: 0;
-        flex: 0 1 190px;
-      }
-      .search-input {
-        min-width: 0;
-        width: 100%;
-        flex: 1;
-      }
-      .follow-label {
-        display: none;
-      }
+    @media (min-width: 900px) {
       .links {
         display: flex;
       }
@@ -633,9 +549,9 @@ interface NavLink {
       }
     }
 
-    @media (min-width: 1500px) {
-      .follow-label {
-        display: inline;
+    @media (min-width: 1180px) {
+      .search-input {
+        width: 220px;
       }
     }
   `,
@@ -643,18 +559,13 @@ interface NavLink {
 export class NavbarComponent implements AfterViewInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
-  private readonly injector = inject(Injector);
-  @ViewChild('mobileToggle') private mobileToggle?: ElementRef<HTMLButtonElement>;
-  @ViewChild('mobileClose') private mobileClose?: ElementRef<HTMLButtonElement>;
-  @ViewChild('drawerNode') private drawer?: ElementRef<HTMLElement>;
 
   protected readonly config = inject(APP_CONFIG);
 
   protected readonly links: readonly NavLink[] = [
     { label: 'Home', path: '/', exact: true },
     { label: 'Characters', path: '/characters' },
-    { label: 'Movies & TV', path: '/movies' },
+    { label: 'Movies', path: '/movies' },
     { label: 'Comics / Lore', path: '/lore' },
     { label: 'Battle Arena', path: '/battle-arena' },
     { label: 'Products', path: '/products' },
@@ -670,11 +581,7 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (typeof window !== 'undefined') {
       this.onScroll = () => {
-        const scrolled = window.scrollY > 8;
-        if (this.scrolled !== scrolled) {
-          this.scrolled = scrolled;
-          this.cdr.markForCheck();
-        }
+        this.scrolled = window.scrollY > 8;
       };
       window.addEventListener('scroll', this.onScroll, { passive: true });
       this.onScroll();
@@ -686,7 +593,6 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
       )
       .subscribe(() => {
         this.mobileOpen = false;
-        this.cdr.markForCheck();
       });
   }
 
@@ -714,44 +620,10 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
   }
 
   protected toggleMobile(): void {
-    if (this.mobileOpen) {
-      this.closeMobile();
-      return;
-    }
-    this.mobileOpen = true;
-    afterNextRender(
-      () => {
-        if (this.mobileOpen) this.mobileClose?.nativeElement.focus();
-      },
-      { injector: this.injector },
-    );
+    this.mobileOpen = !this.mobileOpen;
   }
 
   protected closeMobile(): void {
-    const wasOpen = this.mobileOpen;
     this.mobileOpen = false;
-    if (wasOpen) this.mobileToggle?.nativeElement.focus();
-  }
-
-  @HostListener('document:keydown.escape')
-  protected onEscape(): void {
-    if (this.mobileOpen) this.closeMobile();
-  }
-
-  protected onDrawerKeydown(event: KeyboardEvent): void {
-    if (event.key !== 'Tab' || !this.mobileOpen) return;
-    const nodes = this.drawer?.nativeElement.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), input:not([disabled])',
-    );
-    if (!nodes?.length) return;
-    const first = nodes[0],
-      last = nodes[nodes.length - 1];
-    if (event.shiftKey && event.target === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && event.target === last) {
-      event.preventDefault();
-      first.focus();
-    }
   }
 }

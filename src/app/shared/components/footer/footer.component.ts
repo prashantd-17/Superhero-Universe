@@ -31,15 +31,7 @@ import { APP_CONFIG } from '../../../core/config/app-config';
               rel="noopener noreferrer"
             >
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                <rect
-                  x="3"
-                  y="3"
-                  width="18"
-                  height="18"
-                  rx="5"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                />
+                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8" />
                 <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8" />
                 <circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" />
               </svg>
@@ -51,15 +43,14 @@ import { APP_CONFIG } from '../../../core/config/app-config';
             <h3 class="col-title">Explore</h3>
             <a routerLink="/characters">Character Database</a>
             <a routerLink="/movies">Movies &amp; TV</a>
-            <a routerLink="/series">TV Series</a>
             <a routerLink="/lore">Comics &amp; Lore</a>
             <a routerLink="/battle-arena">Battle Arena</a>
           </nav>
 
           <nav class="col" aria-label="Universes">
             <h3 class="col-title">Universes</h3>
-            <a routerLink="/universes/marvel">Marvel</a>
-            <a routerLink="/universes/dc">DC</a>
+            <a routerLink="/characters" [queryParams]="{ universe: 'marvel' }">Marvel</a>
+            <a routerLink="/characters" [queryParams]="{ universe: 'dc' }">DC</a>
             <a routerLink="/lore">Multiverse &amp; Cosmic</a>
             <a routerLink="/products">Fan Shop</a>
           </nav>
@@ -98,12 +89,7 @@ import { APP_CONFIG } from '../../../core/config/app-config';
 
     @media (min-width: 640px) {
       .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (min-width: 1000px) {
-      .grid {
-        grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+        grid-template-columns: 1.4fr 1fr 1fr 1fr;
       }
     }
 
@@ -131,7 +117,6 @@ import { APP_CONFIG } from '../../../core/config/app-config';
     }
 
     .ig {
-      overflow-wrap: anywhere;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
@@ -148,7 +133,6 @@ import { APP_CONFIG } from '../../../core/config/app-config';
     }
 
     .col {
-      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 0.55rem;

@@ -1,7 +1,11 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Superhero, alignmentLabel, universeLabel } from '../../../core/models/superhero';
+import {
+  Superhero,
+  alignmentLabel,
+  universeLabel,
+} from '../../../core/models/superhero';
 import { TrackDirective } from '../../directives/track.directive';
 import { BadgeComponent } from '../badge/badge.component';
 import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.component';
@@ -41,8 +45,6 @@ import { ImageTone, SmartImageComponent } from '../smart-image/smart-image.compo
   styles: `
     :host {
       display: block;
-      min-width: 0;
-      max-width: 100%;
     }
 
     .card {

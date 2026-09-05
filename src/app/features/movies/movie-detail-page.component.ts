@@ -5,7 +5,6 @@ import {
   computed,
   effect,
   inject,
-  RESPONSE_INIT,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -50,9 +49,7 @@ import { MovieCardComponent } from '../../shared/components/movie-card/movie-car
     } @else {
       <div class="container">
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a [routerLink]="title.kind === 'series' ? '/series' : '/movies'">{{
-            title.kind === 'series' ? 'TV series' : 'Movies & TV'
-          }}</a>
+          <a routerLink="/movies">Movies &amp; TV</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{{ title.title }} ({{ title.year }})</span>
         </nav>
@@ -121,13 +118,8 @@ import { MovieCardComponent } from '../../shared/components/movie-card/movie-car
               </section>
             }
             <div class="source-links">
-              @if (title.posterReferenceUrl) {
-                <a [href]="title.posterReferenceUrl" target="_blank" rel="noopener noreferrer"
-                  >Artwork reference (TVmaze) ↗</a
-                >
-              }
               <a [href]="title.sourceUrl" target="_blank" rel="noopener noreferrer"
-                >Title &amp; credits reference ↗</a
+                >Film &amp; credits reference ↗</a
               >
               <a
                 routerLink="/movies"
@@ -330,7 +322,6 @@ export class MovieDetailPageComponent {
   private readonly seo = inject(SeoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly response = inject(RESPONSE_INIT, { optional: true });
   private readonly movies = toSignal(this.moviesService.movies$, { initialValue: [] });
   private readonly slug = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('slug') ?? '')),
@@ -360,21 +351,17 @@ export class MovieDetailPageComponent {
 
   private applySeo(movie: Movie | undefined, slug: string): void {
     if (!movie) {
-      if (this.response) this.response.status = 404;
       this.seo.apply({
         title: 'Title not found — Movies & TV',
         description: 'Browse the Marvel and DC movie archive.',
         path: `/movies/${slug}`,
         jsonLd: [],
-        noindex: true,
       });
       return;
     }
     this.seo.apply({
       title: `${movie.title} (${movie.year})`,
       description: movie.description,
-      image: movie.posterUrl || undefined,
-      imageAlt: `${movie.title} release artwork`,
       path: `/movies/${movie.slug}`,
       type: 'article',
       jsonLd: [
@@ -384,7 +371,7 @@ export class MovieDetailPageComponent {
           name: movie.title,
           datePublished: String(movie.year),
           description: movie.description,
-          ...(movie.posterUrl ? { image: movie.posterUrl } : {}),
+          image: movie.posterUrl,
           sameAs: movie.sourceUrl,
           actor: movie.cast.map((name) => ({ '@type': 'Person', name })),
           ...(movie.director
@@ -394,11 +381,7 @@ export class MovieDetailPageComponent {
                   .map((name) => ({ '@type': 'Person', name })),
               }
             : {}),
-          ...(movie.creator
-            ? {
-                creator: movie.creator.split(/, | & /).map((name) => ({ '@type': 'Person', name })),
-              }
-            : {}),
+          ...(movie.creator ? { creator: { '@type': 'Person', name: movie.creator } } : {}),
         },
       ],
     });

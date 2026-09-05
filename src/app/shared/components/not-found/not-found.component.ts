@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, RESPONSE_INIT } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SeoService } from '../../../core/services/seo/seo.service';
 
@@ -11,8 +11,8 @@ import { SeoService } from '../../../core/services/seo/seo.service';
       <p class="kicker">Error 404</p>
       <h1 class="title">Lost in the multiverse</h1>
       <p class="sub">
-        The reality you are looking for doesn’t exist in this timeline. Head back to the main branch
-        of the universe.
+        The reality you are looking for doesn’t exist in this timeline.
+        Head back to the main branch of the universe.
       </p>
       <div class="actions">
         <a routerLink="/" class="btn btn-primary">Return home</a>
@@ -56,15 +56,13 @@ import { SeoService } from '../../../core/services/seo/seo.service';
 })
 export class NotFoundComponent implements OnInit {
   private readonly seo = inject(SeoService);
-  private readonly response = inject(RESPONSE_INIT, { optional: true });
   private readonly route = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    if (this.response) this.response.status = 404;
     this.seo.apply({
       title: 'Lost in the multiverse',
-      noindex: true,
-      description: 'This page does not exist in this timeline. Return to The Superhero Universe.',
+      description:
+        'This page does not exist in this timeline. Return to The Superhero Universe.',
       path: this.route.snapshot.url.map((s) => s.path).join('/') || '404',
     });
   }

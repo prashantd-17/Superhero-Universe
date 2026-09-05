@@ -9,10 +9,7 @@ import {
   TIMELINE_MODE_LABELS,
 } from '../../core/models/lore';
 import { SectionHeaderComponent } from '../../shared/components/section-header/section-header.component';
-import {
-  FilterChipsComponent,
-  ChipOption,
-} from '../../shared/components/filter-chips/filter-chips.component';
+import { FilterChipsComponent, ChipOption } from '../../shared/components/filter-chips/filter-chips.component';
 import { BadgeComponent, BadgeVariant } from '../../shared/components/badge/badge.component';
 
 type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
@@ -31,8 +28,8 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
         <p class="kicker">The deep archive</p>
         <h1 class="title-xl">Comics &amp; lore</h1>
         <p class="subtitle">
-          The stories that built the universes — iconic events, cosmic entities and the cinematic
-          timeline, in one place.
+          The stories that built the universes — iconic events, cosmic
+          entities and the cinematic timeline, in one place.
         </p>
       </div>
     </section>
@@ -55,22 +52,8 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
             <article class="lore-card" [ngClass]="'u-' + entry.universe">
               <div class="lore-top">
                 <span class="year">{{ entry.year }}</span>
-                <app-badge
-                  [variant]="
-                    entry.universe === 'cosmic'
-                      ? 'cosmic'
-                      : entry.universe === 'other'
-                        ? 'other'
-                        : entry.universe
-                  "
-                  [label]="
-                    entry.universe === 'cosmic'
-                      ? 'Cosmic'
-                      : entry.universe === 'other'
-                        ? 'Other'
-                        : (entry.universe | titlecase)
-                  "
-                />
+                <app-badge [variant]="entry.universe === 'cosmic' ? 'cosmic' : entry.universe === 'other' ? 'other' : entry.universe"
+                           [label]="entry.universe === 'cosmic' ? 'Cosmic' : entry.universe === 'other' ? 'Other' : entry.universe | titlecase" />
               </div>
               <h2 class="lore-title">{{ entry.title }}</h2>
               <p class="lore-cat">{{ categoryLabels[entry.category] }}</p>
@@ -137,8 +120,8 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
       </section>
 
       <p class="source-note">
-        Curated archive — every entry is real, documented comics or cinematic history. Full story
-        guides arrive with the universe CMS.
+        Curated archive — every entry is real, documented comics or cinematic
+        history. Full story guides arrive with the universe CMS.
       </p>
     </div>
   `,
@@ -178,13 +161,13 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
 
     @media (min-width: 700px) {
       .lore-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
     @media (min-width: 1100px) {
       .lore-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -196,24 +179,16 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
       border: 1px solid var(--panel-border);
       border-radius: 14px;
       background: rgba(10, 14, 22, 0.55);
-      transition:
-        transform 0.22s ease,
-        border-color 0.22s ease;
+      transition: transform 0.22s ease, border-color 0.22s ease;
     }
 
     .lore-card:hover {
       transform: translateY(-3px);
     }
 
-    .lore-card.u-marvel:hover {
-      border-color: rgba(255, 61, 78, 0.45);
-    }
-    .lore-card.u-dc:hover {
-      border-color: rgba(47, 124, 255, 0.45);
-    }
-    .lore-card.u-cosmic:hover {
-      border-color: rgba(168, 85, 247, 0.45);
-    }
+    .lore-card.u-marvel:hover { border-color: rgba(255, 61, 78, 0.45); }
+    .lore-card.u-dc:hover { border-color: rgba(47, 124, 255, 0.45); }
+    .lore-card.u-cosmic:hover { border-color: rgba(168, 85, 247, 0.45); }
 
     .lore-top {
       display: flex;
@@ -258,13 +233,13 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
 
     .cosmic-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 0.9rem;
     }
 
     @media (min-width: 1000px) {
       .cosmic-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -327,9 +302,7 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
       padding: 0.5em 1.2em;
       border-radius: 999px;
       cursor: pointer;
-      transition:
-        color 0.2s ease,
-        background 0.2s ease;
+      transition: color 0.2s ease, background 0.2s ease;
     }
 
     .mode-tab.active {
@@ -350,13 +323,7 @@ type LoreFilter = 'all' | 'marvel' | 'dc' | 'cosmic';
       right: 0;
       top: calc(1.2rem + 1.15rem);
       height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(56, 225, 255, 0.35) 8%,
-        rgba(56, 225, 255, 0.35) 92%,
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(56, 225, 255, 0.35) 8%, rgba(56, 225, 255, 0.35) 92%, transparent);
     }
 
     .tl-nodes {

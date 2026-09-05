@@ -8,50 +8,26 @@ import express from 'express';
 import { join } from 'node:path';
 import { CURATED_MOVIES } from './app/core/data-access/movie/data/movie-data';
 import { MoviePosterCatalog } from './server/movie-posters';
-import { buildRobots, buildSitemap, resolveSiteDeployment, siteForRequest } from './server/seo';
-import type { SiteContext } from './app/core/models/site';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
-/** The Render domain is the canonical default; host/origin overrides stay server-side. */
-const deployment = resolveSiteDeployment(process.env);
+/**
+ * SSR request-host allowlist (SSRF protection).
+ *
+ * Set NG_ALLOWED_HOSTS as a comma-separated list in production
+ * (e.g. "www.thesuperherouniverse.com,thesuperherouniverse.com").
+ * Without it the site accepts any host — fine for this public, static-first
+ * site (the server never fetches user-supplied URLs), but lock it down for
+ * defense in depth.
+ */
+const envHosts = process.env['NG_ALLOWED_HOSTS']
+  ?.split(',')
+  .map((h) => h.trim())
+  .filter(Boolean);
+
 const app = express();
 const angularApp = new AngularNodeAppEngine({
-  allowedHosts: deployment.allowedHosts,
-});
-
-/** Validate request origins before generating canonical links, robots or a sitemap. */
-app.use((req, res, next) => {
-  const site = siteForRequest(
-    {
-      host: req.get('host'),
-      forwardedHost: req.get('x-forwarded-host'),
-      forwardedProto: req.get('x-forwarded-proto'),
-      protocol: req.protocol,
-    },
-    deployment.preferredOrigin,
-    deployment.allowedHosts,
-  );
-  if (!site) {
-    res.status(400).type('text/plain').send('Invalid or unapproved request host.');
-    return;
-  }
-  if (deployment.googleSiteVerification)
-    site.googleSiteVerification = deployment.googleSiteVerification;
-  res.locals['site'] = site;
-  if (site.noindex) res.setHeader('X-Robots-Tag', 'noindex, follow');
-  next();
-});
-
-app.get('/robots.txt', (_req, res) => {
-  res.setHeader('Cache-Control', 'no-cache');
-  res.vary('Host').vary('X-Forwarded-Host').vary('X-Forwarded-Proto');
-  res.type('text/plain').send(buildRobots(res.locals['site'] as SiteContext));
-});
-app.get('/sitemap.xml', (_req, res) => {
-  res.setHeader('Cache-Control', 'no-cache');
-  res.vary('Host').vary('X-Forwarded-Host').vary('X-Forwarded-Proto');
-  res.type('application/xml').send(buildSitemap((res.locals['site'] as SiteContext).origin));
+  allowedHosts: envHosts && envHosts.length > 0 ? envHosts : ['*'],
 });
 
 /** Same-origin, credential-free artwork refresh; never accepts arbitrary upstream URLs. */
@@ -88,7 +64,7 @@ app.use(
  */
 app.use((req, res, next) => {
   angularApp
-    .handle(req, { site: res.locals['site'] })
+    .handle(req)
     .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))
     .catch(next);
 });

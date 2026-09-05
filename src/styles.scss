@@ -63,6 +63,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -153,7 +154,6 @@ button {
 
 .container {
   width: min(1200px, 100% - 2 * var(--gutter));
-  min-width: 0;
   margin-inline: auto;
 }
 
@@ -197,11 +197,7 @@ button {
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  text-align: center;
-  max-width: 100%;
-  min-height: 44px;
+  white-space: nowrap;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -291,19 +287,7 @@ button {
 
 /* ─────────────────────── safe overflow ─────────────────────────── */
 
-/* Fix intrinsic sizing rather than masking overflow with a clipped body. */
-h1,
-h2,
-h3,
-h4 {
-  overflow-wrap: anywhere;
-}
-input,
-select,
-textarea {
+/* images & long words must never cause horizontal overflow on mobile */
+img {
   max-width: 100%;
-  min-width: 0;
-}
-.btn svg {
-  flex-shrink: 0;
 }

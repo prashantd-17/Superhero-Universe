@@ -1,9 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, map, timeout } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { APP_CONFIG } from '../../config/app-config';
-import { Alignment, Superhero, universeOf } from '../../models/superhero';
-import { CharacterDataSource, CharacterDataset } from './character-data-source';
+import {
+  Alignment,
+  Superhero,
+  universeOf,
+} from '../../models/superhero';
+import {
+  CharacterDataSource,
+  CharacterDataset,
+} from './character-data-source';
 
 /* ---------------- raw API shape (Akabab Superhero API v0.3) ---------------- */
 
@@ -175,10 +182,12 @@ function toSuperhero(raw: RawHero): Superhero | null {
   return hero;
 }
 
-export function parseCharacterPayload(payload: unknown): Superhero[] {
+function parsePayload(payload: unknown): Superhero[] {
   if (!Array.isArray(payload)) return [];
   return payload
-    .map((item) => (item && typeof item === 'object' ? toSuperhero(item as RawHero) : null))
+    .map((item) =>
+      item && typeof item === 'object' ? toSuperhero(item as RawHero) : null,
+    )
     .filter((hero): hero is Superhero => hero !== null);
 }
 
@@ -199,9 +208,8 @@ export class AkababCharacterDataSource extends CharacterDataSource {
 
   loadAll(): Observable<CharacterDataset> {
     return this.http.get<unknown>(this.config.characterApi.url).pipe(
-      timeout(5000),
       map((payload): CharacterDataset => ({
-        heroes: parseCharacterPayload(payload),
+        heroes: parsePayload(payload),
         label: 'Akabab Superhero API',
       })),
       catchError(() => this.snapshot()),
@@ -211,7 +219,7 @@ export class AkababCharacterDataSource extends CharacterDataSource {
   private snapshot(): Observable<CharacterDataset> {
     return this.http.get<unknown>(this.config.characterApi.snapshotUrl).pipe(
       map((payload): CharacterDataset => ({
-        heroes: parseCharacterPayload(payload),
+        heroes: parsePayload(payload),
         label: 'Akabab Superhero API (local snapshot)',
       })),
     );

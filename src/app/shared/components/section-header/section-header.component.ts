@@ -11,7 +11,7 @@ import { RevealDirective } from '../../directives/reveal.directive';
       @if (kicker) {
         <p class="kicker">{{ kicker }}</p>
       }
-      <h2 class="title-lg" [attr.id]="headingId || null">{{ title }}</h2>
+      <h2 class="title-lg">{{ title }}</h2>
       @if (subtitle) {
         <p class="subtitle">{{ subtitle }}</p>
       }
@@ -46,7 +46,6 @@ import { RevealDirective } from '../../directives/reveal.directive';
   `,
 })
 export class SectionHeaderComponent {
-  @Input() headingId = '';
   @Input() kicker = '';
   @Input() title = '';
   @Input() subtitle = '';

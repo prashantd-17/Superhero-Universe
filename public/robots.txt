@@ -1,4 +1,5 @@
-# Safe static fallback. The Node server serves origin-aware robots.txt.
-# Deploy the Node server, not browser output alone; see docs/search-and-seo.md.
 User-agent: *
-Disallow: /
+Allow: /
+
+# Replace with your production URL after deployment:
+# Sitemap: https://your-domain.com/sitemap.xml

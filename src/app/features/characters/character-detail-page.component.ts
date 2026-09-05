@@ -1,12 +1,13 @@
 import { AsyncPipe, NgClass } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  RESPONSE_INIT,
   Component,
   DestroyRef,
+  PLATFORM_ID,
   inject,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CharacterService } from '../../core/services/character/character-service';
@@ -60,9 +61,9 @@ const ACCENTS: Record<string, string> = {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @let heroes = heroes$ | async;
+    @let heroes = (heroes$ | async);
     @let loading = (loading$ | async) ?? false;
-    @let error = error$ | async;
+    @let error = (error$ | async);
     @let hero = findHero(heroes);
 
     @if (loading && !hero) {
@@ -104,19 +105,13 @@ const ACCENTS: Record<string, string> = {
             <app-smart-image
               [src]="hero!.image"
               [alt]="hero!.name"
-              [tone]="
-                hero!.universe === 'marvel' ? 'marvel' : hero!.universe === 'dc' ? 'dc' : 'neutral'
-              "
+              [tone]="hero!.universe === 'marvel' ? 'marvel' : hero!.universe === 'dc' ? 'dc' : 'neutral'"
             />
           </div>
           <div class="head-info">
             <p class="kicker">
               {{ hero!.publisher || universeLabel(hero!.universe) }} ·
-              @if (hero!.liveAction) {
-                Live-action file
-              } @else {
-                File #{{ hero!.id }}
-              }
+              @if (hero!.liveAction) { Live-action file } @else { File #{{ hero!.id }} }
             </p>
             <h1 class="name">{{ hero!.name }}</h1>
             @if (hero!.biography?.fullName) {
@@ -126,22 +121,10 @@ const ACCENTS: Record<string, string> = {
               </p>
             }
             <div class="badges">
-              <app-badge
-                [variant]="
-                  hero!.universe === 'marvel' ? 'marvel' : hero!.universe === 'dc' ? 'dc' : 'other'
-                "
-                [label]="universeLabel(hero!.universe)"
-              />
-              <app-badge
-                [variant]="
-                  hero!.alignment === 'good'
-                    ? 'hero'
-                    : hero!.alignment === 'bad'
-                      ? 'villain'
-                      : 'neutral'
-                "
-                [label]="alignmentLabel(hero!.alignment)"
-              />
+              <app-badge [variant]="hero!.universe === 'marvel' ? 'marvel' : hero!.universe === 'dc' ? 'dc' : 'other'"
+                         [label]="universeLabel(hero!.universe)" />
+              <app-badge [variant]="hero!.alignment === 'good' ? 'hero' : hero!.alignment === 'bad' ? 'villain' : 'neutral'"
+                         [label]="alignmentLabel(hero!.alignment)" />
               @if (hero!.appearance?.gender) {
                 <app-badge variant="outline" [label]="hero!.appearance?.gender" />
               }
@@ -189,8 +172,8 @@ const ACCENTS: Record<string, string> = {
               </div>
             </dl>
             <p class="la-note">
-              This is a live-action entry — the file documents the on-screen portrayal, with the
-              character's archive portrait.
+              This is a live-action entry — the file documents the on-screen portrayal, with
+              the character's archive portrait.
             </p>
           </section>
         }
@@ -217,28 +200,16 @@ const ACCENTS: Record<string, string> = {
               <h2 id="bio-title" class="sec-title">Biography</h2>
               <dl class="def">
                 @if (hero!.biography.fullName) {
-                  <div>
-                    <dt>Full name</dt>
-                    <dd>{{ hero!.biography.fullName }}</dd>
-                  </div>
+                  <div><dt>Full name</dt><dd>{{ hero!.biography.fullName }}</dd></div>
                 }
                 @if (hero!.biography.placeOfBirth) {
-                  <div>
-                    <dt>Place of birth</dt>
-                    <dd>{{ hero!.biography.placeOfBirth }}</dd>
-                  </div>
+                  <div><dt>Place of birth</dt><dd>{{ hero!.biography.placeOfBirth }}</dd></div>
                 }
                 @if (hero!.biography.firstAppearance) {
-                  <div>
-                    <dt>First appearance</dt>
-                    <dd>{{ hero!.biography.firstAppearance }}</dd>
-                  </div>
+                  <div><dt>First appearance</dt><dd>{{ hero!.biography.firstAppearance }}</dd></div>
                 }
                 @if (hero!.biography.publisher) {
-                  <div>
-                    <dt>Publisher</dt>
-                    <dd>{{ hero!.biography.publisher }}</dd>
-                  </div>
+                  <div><dt>Publisher</dt><dd>{{ hero!.biography.publisher }}</dd></div>
                 }
               </dl>
             </section>
@@ -249,40 +220,22 @@ const ACCENTS: Record<string, string> = {
               <h2 id="appearance-title" class="sec-title">Appearance</h2>
               <dl class="def def-grid">
                 @if (hero!.appearance.gender) {
-                  <div>
-                    <dt>Gender</dt>
-                    <dd>{{ hero!.appearance.gender }}</dd>
-                  </div>
+                  <div><dt>Gender</dt><dd>{{ hero!.appearance.gender }}</dd></div>
                 }
                 @if (hero!.appearance.race) {
-                  <div>
-                    <dt>Race / class</dt>
-                    <dd>{{ hero!.appearance.race }}</dd>
-                  </div>
+                  <div><dt>Race / class</dt><dd>{{ hero!.appearance.race }}</dd></div>
                 }
                 @if (hero!.appearance.height) {
-                  <div>
-                    <dt>Height</dt>
-                    <dd>{{ hero!.appearance.height }}</dd>
-                  </div>
+                  <div><dt>Height</dt><dd>{{ hero!.appearance.height }}</dd></div>
                 }
                 @if (hero!.appearance.weight) {
-                  <div>
-                    <dt>Weight</dt>
-                    <dd>{{ hero!.appearance.weight }}</dd>
-                  </div>
+                  <div><dt>Weight</dt><dd>{{ hero!.appearance.weight }}</dd></div>
                 }
                 @if (hero!.appearance.eyeColor) {
-                  <div>
-                    <dt>Eyes</dt>
-                    <dd>{{ hero!.appearance.eyeColor }}</dd>
-                  </div>
+                  <div><dt>Eyes</dt><dd>{{ hero!.appearance.eyeColor }}</dd></div>
                 }
                 @if (hero!.appearance.hairColor) {
-                  <div>
-                    <dt>Hair</dt>
-                    <dd>{{ hero!.appearance.hairColor }}</dd>
-                  </div>
+                  <div><dt>Hair</dt><dd>{{ hero!.appearance.hairColor }}</dd></div>
                 }
               </dl>
             </section>
@@ -293,16 +246,10 @@ const ACCENTS: Record<string, string> = {
               <h2 id="work-title" class="sec-title">Work</h2>
               <dl class="def">
                 @if (hero!.work.occupation) {
-                  <div>
-                    <dt>Occupation</dt>
-                    <dd>{{ hero!.work.occupation }}</dd>
-                  </div>
+                  <div><dt>Occupation</dt><dd>{{ hero!.work.occupation }}</dd></div>
                 }
                 @if (hero!.work.base) {
-                  <div>
-                    <dt>Base of operations</dt>
-                    <dd>{{ hero!.work.base }}</dd>
-                  </div>
+                  <div><dt>Base of operations</dt><dd>{{ hero!.work.base }}</dd></div>
                 }
               </dl>
             </section>
@@ -313,16 +260,10 @@ const ACCENTS: Record<string, string> = {
               <h2 id="connections-title" class="sec-title">Connections</h2>
               <dl class="def">
                 @if (hero!.connections.groupAffiliation) {
-                  <div>
-                    <dt>Group affiliation</dt>
-                    <dd>{{ hero!.connections.groupAffiliation }}</dd>
-                  </div>
+                  <div><dt>Group affiliation</dt><dd>{{ hero!.connections.groupAffiliation }}</dd></div>
                 }
                 @if (hero!.connections.relatives) {
-                  <div>
-                    <dt>Relatives</dt>
-                    <dd>{{ hero!.connections.relatives }}</dd>
-                  </div>
+                  <div><dt>Relatives</dt><dd>{{ hero!.connections.relatives }}</dd></div>
                 }
               </dl>
             </section>
@@ -332,24 +273,17 @@ const ACCENTS: Record<string, string> = {
         <section class="coming-soon" aria-label="Coming soon">
           <span class="lock" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-              <rect
-                x="5"
-                y="10"
-                width="14"
-                height="10"
-                rx="2"
-                stroke="currentColor"
-                stroke-width="1.8"
-              />
+              <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8" />
               <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8" />
             </svg>
           </span>
           <div>
             <h3 class="cs-title">Comic history &amp; story arcs</h3>
             <p class="cs-text">
-              Full origin history, major arcs, movie &amp; TV appearances and an in-universe
-              timeline arrive with our own universe archive. What you see above is exactly what the
-              current data source provides — nothing is invented.
+              Full origin history, major arcs, movie &amp; TV appearances and an
+              in-universe timeline arrive with our own universe archive. What you
+              see above is exactly what the current data source provides — nothing
+              is invented.
             </p>
           </div>
         </section>
@@ -426,7 +360,7 @@ const ACCENTS: Record<string, string> = {
 
     @media (min-width: 860px) {
       .scaffold {
-        grid-template-columns: 340px minmax(0, 1fr);
+        grid-template-columns: 340px 1fr;
       }
     }
 
@@ -463,29 +397,15 @@ const ACCENTS: Record<string, string> = {
       animation: shimmer 1.5s ease-in-out infinite;
     }
 
-    .w-40 {
-      width: 40%;
-    }
-    .w-70 {
-      width: 70%;
-    }
-    .w-55 {
-      width: 55%;
-    }
-    .w-80 {
-      width: 80%;
-    }
-    .w-65 {
-      width: 65%;
-    }
+    .w-40 { width: 40%; }
+    .w-70 { width: 70%; }
+    .w-55 { width: 55%; }
+    .w-80 { width: 80%; }
+    .w-65 { width: 65%; }
 
     @keyframes shimmer {
-      from {
-        background-position: 180% 0;
-      }
-      to {
-        background-position: -20% 0;
-      }
+      from { background-position: 180% 0; }
+      to { background-position: -20% 0; }
     }
 
     .dossier-head {
@@ -497,7 +417,7 @@ const ACCENTS: Record<string, string> = {
 
     @media (min-width: 860px) {
       .dossier-head {
-        grid-template-columns: 340px minmax(0, 1fr);
+        grid-template-columns: 340px 1fr;
         align-items: start;
       }
     }
@@ -646,7 +566,7 @@ const ACCENTS: Record<string, string> = {
 
     @media (min-width: 700px) {
       .la-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -753,24 +673,14 @@ const ACCENTS: Record<string, string> = {
     .related-row,
     .shop-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 1.1rem;
-    }
-
-    .shop-row {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    @media (min-width: 560px) {
-      .shop-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
     }
 
     @media (min-width: 1000px) {
       .related-row,
       .shop-row {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, 1fr);
       }
     }
   `,
@@ -781,9 +691,8 @@ export class CharacterDetailPageComponent {
   private readonly seo = inject(SeoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef);
-  private readonly response = inject(RESPONSE_INIT, { optional: true });
 
   protected readonly heroes$ = this.characters.heroes$;
   protected readonly loading$ = this.characters.loading$;
@@ -798,19 +707,24 @@ export class CharacterDetailPageComponent {
   private seoStage: 'none' | 'fallback' | 'full' = 'none';
 
   constructor() {
-    this.characters.load();
-    this.products.load();
-    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      this.slug = params.get('slug') ?? '';
-      this.seoStage = 'none';
-      this.applyFallbackSeo();
-      this.tryApplySeo();
-      this.cdr.markForCheck();
-    });
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        this.slug = params.get('slug') ?? '';
+        this.seoStage = 'none';
+        this.applyFallbackSeo();
+      });
 
     this.characters.heroes$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.tryApplySeo());
+
+    afterNextRender(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        this.characters.load();
+        this.products.load();
+      }
+    });
   }
 
   /**
@@ -835,26 +749,8 @@ export class CharacterDetailPageComponent {
 
   /** '69-batman' → 'Batman', '346-iron-man' → 'Iron Man' (display casing only). */
   private nameFromSlug(slug: string): string {
-    const lower = new Set([
-      'a',
-      'an',
-      'and',
-      'at',
-      'by',
-      'for',
-      'in',
-      'of',
-      'on',
-      'or',
-      'the',
-      'to',
-      'vs',
-    ]);
-    const clean = slug
-      .replace(/^live-/, '')
-      .replace(/^\d+-/, '')
-      .replace(/-/g, ' ')
-      .trim();
+    const lower = new Set(['a', 'an', 'and', 'at', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'vs']);
+    const clean = slug.replace(/^live-/, '').replace(/^\d+-/, '').replace(/-/g, ' ').trim();
     return clean
       .split(' ')
       .map((w, i) =>
@@ -868,18 +764,7 @@ export class CharacterDetailPageComponent {
   private tryApplySeo(): void {
     if (this.seoStage === 'full' || !this.slug) return;
     const hero = this.characters.getBySlug(this.slug);
-    if (!hero) {
-      if (this.characters.heroList().length) {
-        if (this.response) this.response.status = 404;
-        this.seo.apply({
-          title: 'Character not found',
-          description: 'Browse the superhero character archive.',
-          path: `/characters/${this.slug}`,
-          noindex: true,
-        });
-      }
-      return;
-    }
+    if (!hero) return;
     this.seoStage = 'full';
 
     const description =
@@ -889,8 +774,6 @@ export class CharacterDetailPageComponent {
     this.seo.apply({
       title: `${hero.name} — Character File`,
       description: description.trim(),
-      image: hero.image,
-      imageAlt: hero.name,
       path: `/characters/${hero.slug}`,
       jsonLd: [
         {

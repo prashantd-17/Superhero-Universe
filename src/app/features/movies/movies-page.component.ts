@@ -6,17 +6,16 @@ import {
   ElementRef,
   ViewChild,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MovieService } from '../../core/services/movie/movie-service';
 import { SeoService } from '../../core/services/seo/seo.service';
 import { MOVIE_COLLECTIONS, MovieCollection } from '../../core/models/movie';
-import { CATALOG_REVIEWED_AT, CATALOG_COUNTS } from '../../core/data-access/movie/data/movie-data';
+import { CATALOG_REVIEWED_AT } from '../../core/data-access/movie/data/movie-data';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import {
   FilterChipsComponent,
@@ -39,7 +38,6 @@ import {
   selector: 'app-movies-page',
   imports: [
     DatePipe,
-    RouterLink,
     MovieCardComponent,
     FilterChipsComponent,
     EmptyStateComponent,
@@ -50,51 +48,21 @@ import {
     <section class="page-head">
       <div class="container">
         <p class="kicker">Cinema &amp; screen</p>
-        <h1 class="title-xl">{{ seriesPage ? 'Marvel & DC TV series' : 'Movies & TV' }}</h1>
+        <h1 class="title-xl">Movies &amp; TV</h1>
         <p class="subtitle">
-          @if (seriesPage) {
-            From Arrow and Agents of S.H.I.E.L.D. to Batman: The Animated Series and X-Men ’97.
-            Explore live-action shows, animated adventures, classics and new streaming series.
-          } @else {
-            Marvel and DC on screen: explore classic films, modern cinema, live-action television
-            and animated series. Find real credits, release artwork and source links for every
-            title.
-          }
+          From the earliest screen heroes to the MCU and DCU. Explore the classics, the standalone
+          stories and the films that brought the multiverse together.
         </p>
-        <div class="archive-stats" aria-label="Archive coverage">
-          @if (seriesPage) {
-            <span
-              ><strong>{{ counts.series }}</strong> series</span
-            >
-            <span class="marvel-count">{{ counts.marvelSeries }} Marvel</span>
-            <span class="dc-count">{{ counts.dcSeries }} DC</span>
-          } @else {
-            <span
-              ><strong>{{ counts.total }}</strong> titles</span
-            >
-            <span
-              ><strong>{{ counts.films }}</strong> films</span
-            >
-            <span
-              ><strong>{{ counts.series }}</strong> series</span
-            >
-          }
+        <div class="archive-stats" aria-label="Live-action film catalog">
+          <span
+            ><strong>{{ filmCounts().total }}</strong> live-action films</span
+          >
+          <span class="marvel-count">{{ filmCounts().marvel }} Marvel</span>
+          <span class="dc-count">{{ filmCounts().dc }} DC</span>
           <span class="reviewed"
             >Catalog reviewed {{ reviewedAt | date: 'd MMM yyyy' : 'UTC' }}</span
           >
         </div>
-        <nav class="media-nav" aria-label="Browse screen archive">
-          <a routerLink="/movies" [class.active]="!seriesPage && filters().kind === 'all'"
-            >All titles</a
-          >
-          <a
-            routerLink="/movies"
-            [queryParams]="{ kind: 'film' }"
-            [class.active]="!seriesPage && filters().kind === 'film'"
-            >Films</a
-          >
-          <a routerLink="/series" [class.active]="seriesPage">TV series</a>
-        </nav>
       </div>
     </section>
 
@@ -137,17 +105,15 @@ import {
             (select)="updateFilters({ universe: $event, collection: 'all' })"
           />
         </div>
-        @if (!seriesPage) {
-          <div class="chip-row">
-            <span class="control-label" aria-hidden="true">Type</span>
-            <app-filter-chips
-              label="Filter by type"
-              [options]="kindOptions"
-              [value]="filters().kind"
-              (select)="updateFilters({ kind: $event })"
-            />
-          </div>
-        }
+        <div class="chip-row">
+          <span class="control-label" aria-hidden="true">Type</span>
+          <app-filter-chips
+            label="Filter by type"
+            [options]="kindOptions"
+            [value]="filters().kind"
+            (select)="updateFilters({ kind: $event })"
+          />
+        </div>
         <div class="select-row">
           <label class="select-field">
             <span>Style</span>
@@ -238,17 +204,14 @@ import {
         </div>
         @if (pageCount() > 1) {
           <nav class="pagination" aria-label="Movie archive pages">
-            @if (currentPage() > 1) {
-              <a
-                class="btn btn-ghost"
-                rel="prev"
-                [routerLink]="[]"
-                [queryParams]="pageParams(currentPage() - 1)"
-                >Previous</a
-              >
-            } @else {
-              <span class="btn btn-ghost disabled" aria-disabled="true">Previous</span>
-            }
+            <button
+              type="button"
+              class="btn btn-ghost"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(currentPage() - 1)"
+            >
+              Previous
+            </button>
             <label class="page-picker"
               >Page
               <select
@@ -262,33 +225,29 @@ import {
               </select>
               of {{ pageCount() }}
             </label>
-            @if (currentPage() < pageCount()) {
-              <a
-                class="btn btn-ghost"
-                rel="next"
-                [routerLink]="[]"
-                [queryParams]="pageParams(currentPage() + 1)"
-                >Next</a
-              >
-            } @else {
-              <span class="btn btn-ghost disabled" aria-disabled="true">Next</span>
-            }
+            <button
+              type="button"
+              class="btn btn-ghost"
+              [disabled]="currentPage() === pageCount()"
+              (click)="goToPage(currentPage() + 1)"
+            >
+              Next
+            </button>
           </nav>
         }
       }
 
       <div class="source-note">
         <p>
-          Released films and an expanded live-action and animated TV archive, including classics,
-          streaming series and television from Marvel/DC imprints. Collections are browsing groups,
-          not claims of shared continuity. Broadcast repackagings are identified in their notes.
+          Released live-action features, TV films and selected alternate cuts, plus a small
+          animation and series shelf. Marvel/DC imprint adaptations have their own collections; they
+          are not part of the MCU or DCU.
         </p>
         <p>
           Credits are editorially verified, not a live ratings feed. Posters load online from studio
-          and Wikimedia sources, with selected TVmaze artwork references; updated poster lookups are
-          cached for up to 24 hours. All artwork belongs to its respective owners. Each detail page
-          links to its source. Unreleased projects, unmade pilots, promotional videos and most
-          motion comics are not counted.
+          and Wikimedia sources; updated poster lookups are cached for up to 24 hours. All artwork
+          belongs to its respective owners. Each detail page links to its source. Unreleased
+          projects, shorts and serials are not counted.
         </p>
         @if (posterStatus() === 'snapshot' || posterStatus() === 'partial') {
           <button class="text-btn" type="button" (click)="refreshPosters()">
@@ -336,26 +295,6 @@ import {
     .reviewed {
       color: var(--text-2);
       font-size: 0.73rem;
-    }
-    .media-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-    }
-    .media-nav a {
-      padding: 0.65rem 1rem;
-      border: 1px solid var(--panel-border);
-      border-radius: 9px;
-      color: var(--text-1);
-      text-decoration: none;
-      font-size: 0.85rem;
-      min-height: 44px;
-    }
-    .media-nav a.active {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: var(--accent-soft);
     }
     .controls {
       display: flex;
@@ -558,9 +497,6 @@ export class MoviesPageComponent {
   protected readonly posterStatus = this.moviesService.posterStatus;
   protected readonly checkedAt = this.moviesService.postersCheckedAt;
   protected readonly reviewedAt = CATALOG_REVIEWED_AT;
-  protected readonly counts = CATALOG_COUNTS;
-  protected readonly seriesPage = this.route.snapshot.data['catalogKind'] === 'series';
-  private readonly archivePath = this.seriesPage ? '/series' : '/movies';
   protected readonly filters = signal<MovieFilters>({ ...DEFAULT_MOVIE_FILTERS });
   private readonly requestedPage = signal(1);
   protected readonly filtered = computed(() => filterMovies(this.movies(), this.filters()));
@@ -575,15 +511,23 @@ export class MoviesPageComponent {
   protected readonly pageNumbers = computed(() =>
     Array.from({ length: this.pageCount() }, (_, index) => index + 1),
   );
+  protected readonly filmCounts = computed(() => {
+    const films = this.movies().filter(
+      (movie) => movie.kind === 'film' && movie.format === 'live-action',
+    );
+    return {
+      total: films.length,
+      marvel: films.filter((movie) => movie.universe === 'marvel').length,
+      dc: films.filter((movie) => movie.universe === 'dc').length,
+    };
+  });
   protected readonly collectionOptions = computed(() =>
     Object.entries(MOVIE_COLLECTIONS)
       .filter(([value]) =>
         this.movies().some(
           (movie) =>
             movie.collection === value &&
-            (this.filters().universe === 'all' || movie.universe === this.filters().universe) &&
-            (this.filters().kind === 'all' || movie.kind === this.filters().kind) &&
-            (this.filters().format === 'all' || movie.format === this.filters().format),
+            (this.filters().universe === 'all' || movie.universe === this.filters().universe),
         ),
       )
       .map(([value, label]) => ({ value, label })),
@@ -604,57 +548,25 @@ export class MoviesPageComponent {
   constructor() {
     this.moviesService.load(); // Bundled data is safe and immediate on SSR, too.
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const filters = readMovieFilters(params);
-      if (this.seriesPage) filters.kind = 'series';
-      this.filters.set(filters);
+      this.filters.set(readMovieFilters(params));
       this.requestedPage.set(readMoviePage(params));
     });
-    effect(() => {
-      const filters = this.filters();
-      const filteredView =
-        !!filters.search ||
-        filters.universe !== 'all' ||
-        filters.collection !== 'all' ||
-        filters.format !== 'all' ||
-        filters.sort !== 'newest' ||
-        (!this.seriesPage && filters.kind !== 'all');
-      this.seo.apply({
-        title: this.seriesPage ? 'Marvel & DC TV Series' : 'Marvel & DC Movies and TV',
-        description: this.seriesPage
-          ? `Browse ${this.counts.series} comic-book TV series, including Marvel and DC live-action shows, animation, classics and streaming series, with cast and source references.`
-          : `Explore Marvel and DC movies and television: ${this.counts.films} films and ${this.counts.series} series with cast, creators, release years and real artwork.`,
-        path:
-          this.archivePath +
-          (!filteredView && this.currentPage() > 1 ? `?page=${this.currentPage()}` : ''),
-        noindex: filteredView,
-        jsonLd: [
-          {
-            '@type': 'ItemList',
-            name: this.seriesPage
-              ? 'Comic-book television series'
-              : 'Movies and television archive',
-            itemListElement: this.visibleMovies().map((movie, index) => ({
-              '@type': 'ListItem',
-              position: this.startIndex() + index + 1,
-              name: movie.title,
-              url: this.seo.absoluteUrl(`/movies/${movie.slug}`),
-            })),
-          },
-        ],
-      });
+    this.seo.apply({
+      title: 'Movies & TV',
+      description:
+        'Explore Marvel and DC live-action films, classic adaptations and selected series with real posters, cast, directors and searchable collections.',
+      path: '/movies',
     });
     afterNextRender(() => this.moviesService.refreshPosters());
   }
 
   protected updateFilters(patch: Partial<MovieFilters>, replaceUrl = false): void {
     const next = { ...this.filters(), ...patch };
-    if (this.seriesPage) next.kind = 'series';
-    if (patch.kind !== undefined || patch.format !== undefined) next.collection = 'all';
     this.filters.set(next);
     this.requestedPage.set(1);
     void this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: this.pageParams(1, next),
+      queryParams: movieQueryParams(next),
       replaceUrl,
     });
   }
@@ -684,16 +596,11 @@ export class MoviesPageComponent {
     const next = Math.max(1, Math.min(page, this.pageCount()));
     this.requestedPage.set(next);
     void this.router
-      .navigate([], { relativeTo: this.route, queryParams: this.pageParams(next) })
+      .navigate([], { relativeTo: this.route, queryParams: movieQueryParams(this.filters(), next) })
       .then(() => {
         this.resultsHeading?.nativeElement.focus({ preventScroll: true });
         this.resultsHeading?.nativeElement.scrollIntoView({ block: 'start' });
       });
-  }
-  protected pageParams(page: number, filters = this.filters()) {
-    const params = movieQueryParams(filters, page);
-    if (this.seriesPage) params['kind'] = null;
-    return params;
   }
   protected retry(): void {
     this.moviesService.retry();

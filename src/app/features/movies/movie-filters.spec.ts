@@ -12,13 +12,10 @@ import {
 const all: MovieFilters = { ...DEFAULT_MOVIE_FILTERS, kind: 'all', format: 'all' };
 
 describe('Movie archive filters', () => {
-  it('shows films and series by default, with explicit live-action and animation filters', () => {
-    expect(filterMovies(CURATED_MOVIES, { ...DEFAULT_MOVIE_FILTERS }).length).toBe(353);
-    expect(
-      filterMovies(CURATED_MOVIES, { ...all, kind: 'film', format: 'live-action' }).length,
-    ).toBe(155);
-    expect(filterMovies(CURATED_MOVIES, all).length).toBe(353);
-    expect(filterMovies(CURATED_MOVIES, { ...all, kind: 'series' }).length).toBe(197);
+  it('defaults to released live-action films, with explicit access to the complete shelf', () => {
+    expect(filterMovies(CURATED_MOVIES, { ...DEFAULT_MOVIE_FILTERS }).length).toBe(155);
+    expect(filterMovies(CURATED_MOVIES, all).length).toBe(161);
+    expect(filterMovies(CURATED_MOVIES, { ...all, kind: 'series' }).length).toBe(5);
     expect(
       filterMovies(CURATED_MOVIES, { ...all, format: 'animation' }).map((movie) => movie.slug),
     ).toContain('spider-man-across-the-spider-verse');
@@ -57,7 +54,7 @@ describe('Movie archive filters', () => {
       if (expected) expect(slugs).toContain(expected);
       else expect(slugs).toEqual([]);
     }
-    expect(filterMovies(CURATED_MOVIES, { ...all, search: '   ' }).length).toBe(353);
+    expect(filterMovies(CURATED_MOVIES, { ...all, search: '   ' }).length).toBe(161);
   });
 
   it('sorts predictably without mutating the shared archive', () => {

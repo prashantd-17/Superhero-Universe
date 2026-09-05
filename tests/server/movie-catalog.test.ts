@@ -6,11 +6,8 @@ import {
   CATALOG_REVIEWED_AT,
 } from '../../src/app/core/data-access/movie/data/movie-data';
 import { VERIFIED_POSTERS } from '../../src/app/core/data-access/movie/data/movie-posters';
-import { SERIES_ARTWORK } from '../../src/app/core/data-access/movie/data/series-artwork';
-import { SERIES_STUDIO_ARTWORK } from '../../src/app/core/data-access/movie/data/series-studio-artwork';
-import { SERIES_POSTER_OVERRIDES } from '../../src/app/core/data-access/movie/data/series-poster-overrides';
 import { STUDIO_POSTERS } from '../../src/app/core/data-access/movie/data/studio-posters';
-import { MOVIE_COLLECTIONS } from '../../src/app/core/models/movie';
+import { MOVIE_COLLECTIONS, isMoviePosterUrl } from '../../src/app/core/models/movie';
 
 const movie = (slug: string) => {
   const result = CURATED_MOVIES.find((entry) => entry.slug === slug);
@@ -20,12 +17,11 @@ const movie = (slug: string) => {
 
 test('every entry has unique identity, real source artwork, credits and an explicit format', () => {
   assert.equal(new Set(CURATED_MOVIES.map((entry) => entry.slug)).size, CURATED_MOVIES.length);
-  assert.equal(CURATED_MOVIES.length, 353);
+  assert.equal(CURATED_MOVIES.length, 161);
   for (const entry of CURATED_MOVIES) {
     assert.match(entry.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     assert.ok(entry.title && entry.description && entry.cast.length >= 3, entry.slug);
-    if (entry.kind === 'film') assert.ok(entry.director, entry.slug);
-    if (entry.creator !== undefined) assert.ok(entry.creator.trim(), entry.slug);
+    assert.ok(entry.kind === 'film' ? entry.director : entry.creator, entry.slug);
     assert.ok(
       Number.isInteger(entry.year) &&
         entry.year >= 1951 &&
@@ -41,51 +37,30 @@ test('every entry has unique identity, real source artwork, credits and an expli
       ),
       entry.wikipediaTitle,
     );
-    const title = entry.posterPageTitle ?? entry.wikipediaTitle;
-    const expectedFallback =
-      VERIFIED_POSTERS[title] ??
-      SERIES_ARTWORK[title] ??
-      SERIES_POSTER_OVERRIDES[entry.slug]?.url ??
-      SERIES_STUDIO_ARTWORK[entry.wikipediaTitle] ??
-      STUDIO_POSTERS[entry.wikipediaTitle] ??
-      '';
-    assert.equal(entry.posterFallbackUrl, expectedFallback, entry.slug);
-    if (!entry.posterUrl) {
-      assert.equal(entry.slug, 'the-kid-super-power-hour-with-shazam');
-      assert.match(entry.releaseNote!, /No verified/);
-    } else {
-      const image = new URL(entry.posterUrl);
-      assert.equal(image.protocol, 'https:', entry.slug);
-      assert.ok(
-        ['upload.wikimedia.org', 'cdn.marvel.com', 'static.dc.com', 'static.tvmaze.com'].includes(
-          image.hostname,
-        ),
-        entry.slug,
-      );
-      assert.ok(
-        [
-          entry.posterFallbackUrl,
-          STUDIO_POSTERS[entry.wikipediaTitle],
-          SERIES_STUDIO_ARTWORK[entry.wikipediaTitle],
-          SERIES_POSTER_OVERRIDES[entry.slug]?.url,
-        ].includes(entry.posterUrl),
-        entry.slug,
-      );
-    }
+    assert.equal(
+      entry.posterFallbackUrl,
+      VERIFIED_POSTERS[entry.posterPageTitle ?? entry.wikipediaTitle],
+      entry.slug,
+    );
+    assert.equal(isMoviePosterUrl(entry.posterFallbackUrl), true, entry.slug);
+    assert.ok(
+      entry.posterUrl === entry.posterFallbackUrl ||
+        entry.posterUrl === STUDIO_POSTERS[entry.wikipediaTitle],
+      entry.slug,
+    );
     assert.equal(new Set(entry.cast).size, entry.cast.length, entry.slug);
     if (entry.kind === 'series') assert.equal(entry.releaseType, 'series');
   }
 });
 
 test('Wikimedia hash paths match their actual filenames (catches mistyped image URLs)', () => {
-  for (const [title, image] of Object.entries({ ...VERIFIED_POSTERS, ...SERIES_ARTWORK })) {
+  for (const [title, image] of Object.entries(VERIFIED_POSTERS)) {
     const path = new URL(image).pathname.split('/');
-    const index = path[3] === 'thumb' ? 4 : 3;
     const hash = createHash('md5')
-      .update(decodeURIComponent(path[index + 2]))
+      .update(decodeURIComponent(path.at(-1)!))
       .digest('hex');
-    assert.equal(path[index + 1], hash.slice(0, 2), title);
-    assert.equal(path[index], hash.slice(0, 1), title);
+    assert.equal(path.at(-2), hash.slice(0, 2), title);
+    assert.equal(path.at(-3), hash.slice(0, 1), title);
   }
 });
 
@@ -219,105 +194,5 @@ test('corrects the previous credit/plot errors, labels animation and excludes un
       false,
       slug,
     );
-  }
-});
-
-test('includes classic, streaming, animated and imprint series, not only the original five', () => {
-  const shows = CURATED_MOVIES.filter((entry) => entry.kind === 'series');
-  assert.equal(shows.length, 197);
-  assert.equal(shows.filter((entry) => entry.universe === 'marvel').length, 94);
-  assert.equal(shows.filter((entry) => entry.universe === 'dc').length, 101);
-  for (const slug of [
-    'agents-of-shield',
-    'agent-carter',
-    'jessica-jones',
-    'luke-cage',
-    'iron-fist',
-    'the-defenders',
-    'the-punisher-series',
-    'legion',
-    'the-gifted',
-    'runaways',
-    'cloak-and-dagger',
-    'helstrom',
-    'wandavision',
-    'the-falcon-and-the-winter-soldier',
-    'hawkeye',
-    'moon-knight',
-    'ms-marvel',
-    'she-hulk-attorney-at-law',
-    'secret-invasion',
-    'echo',
-    'agatha-all-along',
-    'daredevil-born-again',
-    'ironheart',
-    'wonder-man',
-    'spider-noir',
-    'arrow',
-    'the-flash-series',
-    'supergirl-series',
-    'smallville',
-    'lois-and-clark',
-    'gotham',
-    'legends-of-tomorrow',
-    'black-lightning',
-    'titans',
-    'doom-patrol',
-    'swamp-thing-2019-series',
-    'stargirl',
-    'superman-and-lois',
-    'batwoman',
-    'peacemaker',
-    'the-penguin',
-    'lanterns',
-    'lucifer',
-    'preacher',
-    'the-sandman',
-    'sweet-tooth',
-    'x-men-the-animated-series',
-    'x-men-97',
-    'what-if',
-    'your-friendly-neighborhood-spider-man',
-    'batman-the-animated-series',
-    'superman-the-animated-series',
-    'batman-beyond',
-    'justice-league-animated-series',
-    'justice-league-unlimited',
-    'young-justice',
-    'teen-titans',
-    'teen-titans-go',
-    'harley-quinn',
-    'creature-commandos',
-    'my-adventures-with-superman',
-    'bat-fam',
-  ])
-    assert.equal(movie(slug).kind, 'series', slug);
-  assert.equal(movie('the-incredible-hulk-series').year, 1977);
-  assert.match(movie('the-incredible-hulk-series').releaseNote!, /1978/);
-  for (const slug of [
-    'visionquest',
-    'criminal',
-    'marvels-most-wanted',
-    'new-warriors',
-    'my-adventures-with-green-lantern',
-  ])
-    assert.equal(
-      shows.some((entry) => entry.slug === slug),
-      false,
-      slug,
-    );
-});
-
-test('distinct anime adaptations do not get the same generic franchise poster', () => {
-  const anime = [
-    'marvel-anime-iron-man',
-    'marvel-anime-wolverine',
-    'marvel-anime-x-men',
-    'marvel-anime-blade',
-  ].map(movie);
-  assert.equal(new Set(anime.map((entry) => entry.posterUrl)).size, 4);
-  for (const entry of anime) {
-    assert.equal(entry.posterRefresh, false);
-    assert.ok(entry.posterReferenceUrl?.startsWith('https://www.tvmaze.com/shows/'));
   }
 });

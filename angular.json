@@ -49,8 +49,7 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public",
-                "ignore": ["robots.txt", "sitemap.xml"]
+                "input": "public"
               },
               {
                 "glob": "**/*",
@@ -62,12 +61,7 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": [
-                "superhero-universe.onrender.com",
-                "localhost",
-                "127.0.0.1",
-                "*.e2b.app"
-              ]
+              "allowedHosts": ["localhost", "127.0.0.1", "*.e2b.app"]
             },
             "ssr": {
               "entry": "src/server.ts"
@@ -118,13 +112,7 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "host": "0.0.0.0",
-            "allowedHosts": [
-              "superhero-universe.onrender.com",
-              "localhost",
-              "127.0.0.1",
-              ".e2b.app",
-              "*.e2b.app"
-            ]
+            "allowedHosts": ["localhost", "127.0.0.1", ".e2b.app", "*.e2b.app"]
           },
           "configurations": {
             "production": {

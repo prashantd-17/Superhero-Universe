@@ -49,9 +49,6 @@ export interface Movie {
   wikipediaTitle: string;
   /** Series can use a season article’s poster instead of the main article’s logo. */
   posterPageTitle?: string;
-  /** False for distinct series sharing a non-series-specific source article. */
-  posterRefresh?: boolean;
-  posterReferenceUrl?: string;
   sourceUrl: string;
   posterUrl: string;
   /** Last verified image, retained if a refreshed image fails to load. */
