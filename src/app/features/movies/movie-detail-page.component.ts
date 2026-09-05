@@ -1,47 +1,47 @@
-import { AsyncPipe, NgClass } from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  PLATFORM_ID,
+  computed,
+  effect,
   inject,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { MovieService } from '../../core/services/movie/movie-service';
 import { SeoService } from '../../core/services/seo/seo.service';
-import { Movie } from '../../core/models/movie';
+import { Movie, MOVIE_COLLECTIONS, RELEASE_TYPE_LABELS } from '../../core/models/movie';
 import { AdSlotComponent } from '../../shared/components/ad-slot/ad-slot.component';
 import { BadgeComponent } from '../../shared/components/badge/badge.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../shared/components/error-state/error-state.component';
+import { MoviePosterComponent } from '../../shared/components/movie-poster/movie-poster.component';
+import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 
-/** Movie/TV dossier (curated archive). */
 @Component({
   selector: 'app-movie-detail-page',
-  imports: [AsyncPipe, NgClass, RouterLink, AdSlotComponent, BadgeComponent, EmptyStateComponent, ErrorStateComponent],
+  imports: [
+    RouterLink,
+    AdSlotComponent,
+    BadgeComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
+    MoviePosterComponent,
+    MovieCardComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @let movies = (movies$ | async);
-    @let loading = (loading$ | async) ?? false;
-    @let error = (error$ | async);
-    @let movie = findMovie(movies);
-
-    @if (loading && !movie) {
-      <div class="container pad">
-        <div class="loading-note" role="status">Opening the file…</div>
-      </div>
-    } @else if (error && !movie) {
-      <div class="container pad">
-        <app-error-state (retry)="retry()" />
-      </div>
-    } @else if (!movie) {
+    @let title = movie();
+    @if (loading() && !title) {
+      <div class="container pad"><p role="status">Opening the file…</p></div>
+    } @else if (error() && !title) {
+      <div class="container pad"><app-error-state (retry)="retry()" /></div>
+    } @else if (!title) {
       <div class="container pad">
         <app-empty-state
           title="Title not found"
-          message="This title is not on the shelf yet. It may have been moved or the link may be mistyped."
+          message="This title is not in the archive. Check the link or browse the movie shelf."
           actionLabel="Back to the shelf"
           (action)="backToShelf()"
         />
@@ -51,49 +51,98 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
         <nav class="crumbs" aria-label="Breadcrumb">
           <a routerLink="/movies">Movies &amp; TV</a>
           <span aria-hidden="true">/</span>
-          <span class="current">{{ movie.title }}</span>
+          <span aria-current="page">{{ title.title }} ({{ title.year }})</span>
         </nav>
-
         <header class="head">
-          <div class="poster" [ngClass]="universeClass(movie.universe)">
-            <span class="year">{{ movie.year }}</span>
-            <h1 class="title">{{ movie.title }}</h1>
-            <div class="badges">
-              <app-badge variant="outline" [label]="movie.kind === 'series' ? 'Series' : 'Film'" />
-              <app-badge [variant]="movie.universe === 'marvel' ? 'marvel' : movie.universe === 'dc' ? 'dc' : 'other'"
-                         [label]="universeText(movie.universe)" />
-            </div>
-          </div>
+          <figure class="artwork">
+            <div class="poster"><app-movie-poster [movie]="title" [eager]="true" /></div>
+            <figcaption>Release artwork · © respective rights holders</figcaption>
+          </figure>
           <div class="info">
-            <p class="tagline">“{{ movie.tagline }}”</p>
-            <p class="desc">{{ movie.description }}</p>
+            <p class="kicker">{{ collections[title.collection] }}</p>
+            <h1>{{ title.title }}</h1>
+            <div class="badges">
+              <app-badge variant="outline" [label]="releaseTypes[title.releaseType]" />
+              <app-badge
+                variant="outline"
+                [label]="title.format === 'live-action' ? 'Live action' : 'Animation'"
+              />
+              <app-badge
+                [variant]="
+                  title.universe === 'marvel' ? 'marvel' : title.universe === 'dc' ? 'dc' : 'other'
+                "
+                [label]="
+                  title.universe === 'marvel'
+                    ? 'Marvel'
+                    : title.universe === 'dc'
+                      ? 'DC'
+                      : 'Multiverse'
+                "
+              />
+            </div>
+            @if (title.tagline) {
+              <p class="tagline">{{ title.tagline }}</p>
+            }
+            <p class="desc">{{ title.description }}</p>
             <dl class="meta">
-              @if (movie.director) {
-                <div><dt>Directed by</dt><dd>{{ movie.director }}</dd></div>
+              <div>
+                <dt>{{ title.kind === 'series' ? 'First aired' : 'First release' }}</dt>
+                <dd>{{ title.year }}</dd>
+              </div>
+              @if (title.director) {
+                <div>
+                  <dt>Directed by</dt>
+                  <dd>{{ title.director }}</dd>
+                </div>
               }
-              @if (movie.creator) {
-                <div><dt>Created by</dt><dd>{{ movie.creator }}</dd></div>
+              @if (title.creator) {
+                <div>
+                  <dt>Created by</dt>
+                  <dd>{{ title.creator }}</dd>
+                </div>
               }
-              <div><dt>Release year</dt><dd>{{ movie.year }}</dd></div>
             </dl>
-            @if (movie.cast.length) {
-              <div class="cast">
-                <h2 class="cast-title">Principal cast</h2>
+            @if (title.releaseNote) {
+              <p class="release-note">{{ title.releaseNote }}</p>
+            }
+            @if (title.cast.length) {
+              <section class="cast" aria-labelledby="cast-heading">
+                <h2 id="cast-heading">
+                  {{ title.format === 'animation' ? 'Principal voice cast' : 'Principal cast' }}
+                </h2>
                 <ul>
-                  @for (actor of movie.cast; track actor) {
+                  @for (actor of title.cast; track $index) {
                     <li>{{ actor }}</li>
                   }
                 </ul>
-              </div>
+              </section>
             }
+            <div class="source-links">
+              <a [href]="title.sourceUrl" target="_blank" rel="noopener noreferrer"
+                >Film &amp; credits reference ↗</a
+              >
+              <a
+                routerLink="/movies"
+                [queryParams]="{ collection: title.collection, kind: 'all', format: 'all' }"
+                >Browse this collection →</a
+              >
+            </div>
           </div>
         </header>
-
         <app-ad-slot placement="movie-top" />
-
-        <div class="related">
+        @if (related().length) {
+          <section class="related-movies" aria-labelledby="related-heading">
+            <h2 id="related-heading">More in this collection</h2>
+            <div class="related-grid">
+              @for (relatedMovie of related(); track relatedMovie.slug) {
+                <app-movie-card [movie]="relatedMovie" />
+              }
+            </div>
+          </section>
+        }
+        <div class="related-links">
+          <a routerLink="/movies" class="btn btn-ghost">Explore all movies</a>
           <a routerLink="/lore" class="btn btn-ghost">Explore related lore</a>
-          <a routerLink="/battle-arena" class="btn btn-ghost">Take it to the arena</a>
         </div>
       </div>
     }
@@ -102,154 +151,115 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
     .pad {
       padding: 3rem 1.25rem;
     }
-
-    .loading-note {
-      color: var(--text-2);
-      font-family: var(--font-ui);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      font-size: 0.8rem;
-      padding: 3rem 0;
-    }
-
     .crumbs {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 0.5rem;
-      padding: 2.2rem 0 1.2rem;
+      padding: 2.2rem 0 1.5rem;
       font-family: var(--font-ui);
-      font-size: 0.8rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      color: var(--text-1);
     }
-
     .crumbs a {
       color: var(--text-2);
       text-decoration: none;
     }
-
     .crumbs a:hover {
       color: var(--accent);
     }
-
-    .crumbs span {
-      color: var(--text-2);
-    }
-
-    .crumbs .current {
-      color: var(--text-0);
-    }
-
     .head {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.8rem;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
       padding-bottom: 1rem;
     }
-
-    @media (min-width: 860px) {
-      .head {
-        grid-template-columns: 300px 1fr;
-        align-items: start;
-      }
-    }
-
-    .poster {
-      aspect-ratio: 2 / 3;
+    .artwork {
+      margin: 0;
+      width: 100%;
       max-width: 340px;
-      border-radius: 16px;
+    }
+    .poster {
+      position: relative;
+      aspect-ratio: 2 / 3;
+      border-radius: 14px;
       border: 1px solid var(--panel-border);
-      padding: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      background:
-        radial-gradient(130% 80% at 50% 0%, rgba(56, 225, 255, 0.1), transparent 60%),
-        linear-gradient(180deg, #0b1120 0%, #070a12 100%);
+      overflow: hidden;
     }
-
-    .poster.u-marvel {
-      background:
-        radial-gradient(130% 80% at 50% 0%, rgba(255, 61, 78, 0.18), transparent 60%),
-        linear-gradient(180deg, #170b10 0%, #070a12 100%);
+    .poster app-movie-poster {
+      position: absolute;
+      inset: 0;
     }
-
-    .poster.u-dc {
-      background:
-        radial-gradient(130% 80% at 50% 0%, rgba(47, 124, 255, 0.18), transparent 60%),
-        linear-gradient(180deg, #0a1020 0%, #070a12 100%);
+    figcaption {
+      color: var(--text-2);
+      font-size: 0.65rem;
+      line-height: 1.6;
+      text-align: center;
+      margin-top: 0.6rem;
     }
-
-    .year {
+    .info {
+      min-width: 0;
+    }
+    h1 {
       font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 1.8rem;
-      letter-spacing: 0.06em;
-      color: rgba(232, 236, 244, 0.16);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.15;
+      margin: 0.6rem 0 1rem;
+      overflow-wrap: anywhere;
     }
-
-    .title {
-      margin-top: auto;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1.5rem;
-      line-height: 1.12;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
     .badges {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.9rem;
+      gap: 0.45rem;
+      margin-bottom: 1.5rem;
     }
-
     .tagline {
-      font-style: italic;
       color: var(--text-1);
-      font-size: 1.05rem;
-      margin: 0 0 1rem;
+      font-style: italic;
     }
-
     .desc {
       color: var(--text-0);
-      line-height: 1.75;
-      margin: 0 0 1.4rem;
+      line-height: 1.8;
+      margin: 0 0 1.5rem;
       max-width: 70ch;
     }
-
     .meta {
       display: flex;
       flex-wrap: wrap;
       gap: 1.6rem;
-      margin: 0 0 1.4rem;
+      margin: 0 0 1.5rem;
     }
-
     .meta dt {
       font-family: var(--font-ui);
       font-weight: 700;
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--text-2);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.35rem;
     }
-
     .meta dd {
       margin: 0;
       color: var(--text-0);
       font-size: 0.98rem;
     }
-
-    .cast-title {
-      font-family: var(--font-display);
-      font-size: 0.95rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin: 0 0 0.6rem;
+    .release-note {
+      color: var(--text-1);
+      border-left: 2px solid var(--accent);
+      padding: 0.65rem 0.9rem;
+      background: rgba(56, 225, 255, 0.04);
+      font-size: 0.82rem;
+      line-height: 1.7;
+      margin: 0 0 1.5rem;
     }
-
+    h2 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin: 0 0 0.8rem;
+    }
     .cast ul {
       list-style: none;
       margin: 0;
@@ -258,7 +268,6 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
       flex-wrap: wrap;
       gap: 0.5rem;
     }
-
     .cast li {
       padding: 0.4em 0.9em;
       border: 1px solid var(--panel-border);
@@ -266,12 +275,45 @@ import { ErrorStateComponent } from '../../shared/components/error-state/error-s
       color: var(--text-1);
       font-size: 0.85rem;
     }
-
-    .related {
+    .source-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem 1.2rem;
+      margin-top: 1.8rem;
+    }
+    .source-links a {
+      color: var(--accent);
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    .related-movies {
+      margin-top: 2.4rem;
+    }
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.1rem;
+    }
+    .related-links {
       display: flex;
       flex-wrap: wrap;
       gap: 0.8rem;
-      padding: 1.6rem 0 3rem;
+      padding: 2rem 0 3rem;
+    }
+    @media (min-width: 860px) {
+      .head {
+        grid-template-columns: 300px minmax(0, 1fr);
+        align-items: start;
+        gap: 2.5rem;
+      }
+      .related-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 440px) {
+      .related-grid {
+        gap: 0.65rem;
+      }
     }
   `,
 })
@@ -280,77 +322,43 @@ export class MovieDetailPageComponent {
   private readonly seo = inject(SeoService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly destroyRef = inject(DestroyRef);
-
-  protected readonly movies$ = this.moviesService.movies$;
-  protected readonly loading$ = this.moviesService.loading$;
-  protected readonly error$ = this.moviesService.error$;
-
-  private slug = '';
-  /** 'none' → 'fallback' (slug-derived) → 'full' (data-derived, wins). */
-  private seoStage: 'none' | 'fallback' | 'full' = 'none';
+  private readonly movies = toSignal(this.moviesService.movies$, { initialValue: [] });
+  private readonly slug = toSignal(
+    this.route.paramMap.pipe(map((params) => params.get('slug') ?? '')),
+    { initialValue: '' },
+  );
+  protected readonly movie = computed(() =>
+    this.movies().find((movie) => movie.slug === this.slug()),
+  );
+  protected readonly loading = toSignal(this.moviesService.loading$, { initialValue: false });
+  protected readonly error = toSignal(this.moviesService.error$, { initialValue: null });
+  protected readonly collections = MOVIE_COLLECTIONS;
+  protected readonly releaseTypes = RELEASE_TYPE_LABELS;
+  protected readonly related = computed(() =>
+    this.movies()
+      .filter(
+        (movie) => movie.collection === this.movie()?.collection && movie.slug !== this.slug(),
+      )
+      .slice(0, 4),
+  );
 
   constructor() {
-    this.route.paramMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        this.slug = params.get('slug') ?? '';
-        this.seoStage = 'none';
-        this.applyFallbackSeo();
+    this.moviesService.load();
+    // Reactive to route reuse AND poster refreshes; deep links also get complete SSR metadata.
+    effect(() => this.applySeo(this.movie(), this.slug()));
+    afterNextRender(() => this.moviesService.refreshPosters());
+  }
+
+  private applySeo(movie: Movie | undefined, slug: string): void {
+    if (!movie) {
+      this.seo.apply({
+        title: 'Title not found — Movies & TV',
+        description: 'Browse the Marvel and DC movie archive.',
+        path: `/movies/${slug}`,
+        jsonLd: [],
       });
-
-    this.moviesService.movies$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.tryApplySeo());
-
-    afterNextRender(() => {
-      if (isPlatformBrowser(this.platformId)) {
-        this.moviesService.load();
-      }
-    });
-  }
-
-  /**
-   * Slug-derived SEO applied in the constructor, so every movie URL gets a
-   * unique title + canonical on the server before data resolves. The name is
-   * formatted from the URL slug only (no invented data). Replaced by the
-   * full data-driven SEO in tryApplySeo() once the archive loads.
-   */
-  private applyFallbackSeo(): void {
-    if (this.seoStage !== 'none' || !this.slug) return;
-    this.seoStage = 'fallback';
-    const title = this.titleFromSlug(this.slug);
-    this.seo.apply({
-      title: `${title} — Movies & TV`,
-      description:
-        `${title} — film & series guide from The Superhero Universe. ` +
-        'Cast, synopsis and where it fits in the universe.',
-      path: `/movies/${this.slug}`,
-      type: 'article',
-      jsonLd: [],
-    });
-  }
-
-  /** 'iron-man' → 'Iron Man' (display casing only). */
-  private titleFromSlug(slug: string): string {
-    const lower = new Set(['a', 'an', 'and', 'at', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'vs']);
-    const clean = slug.replace(/^\d+-/, '').replace(/-/g, ' ').trim();
-    return clean
-      .split(' ')
-      .map((w, i) =>
-        i > 0 && lower.has(w.toLowerCase())
-          ? w.toLowerCase()
-          : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(),
-      )
-      .join(' ');
-  }
-
-  private tryApplySeo(): void {
-    if (this.seoStage === 'full' || !this.slug) return;
-    const movie = this.moviesService.bySlug(this.slug);
-    if (!movie) return;
-    this.seoStage = 'full';
+      return;
+    }
     this.seo.apply({
       title: `${movie.title} (${movie.year})`,
       description: movie.description,
@@ -359,39 +367,28 @@ export class MovieDetailPageComponent {
       jsonLd: [
         {
           '@context': 'https://schema.org',
-          '@type': movie.kind === 'series' ? 'TVEpisode' : 'Movie',
+          '@type': movie.kind === 'series' ? 'TVSeries' : 'Movie',
           name: movie.title,
           datePublished: String(movie.year),
           description: movie.description,
-          ...(movie.director ? { director: movie.director } : {}),
+          image: movie.posterUrl,
+          sameAs: movie.sourceUrl,
+          actor: movie.cast.map((name) => ({ '@type': 'Person', name })),
+          ...(movie.director
+            ? {
+                director: movie.director
+                  .split(/, | & /)
+                  .map((name) => ({ '@type': 'Person', name })),
+              }
+            : {}),
+          ...(movie.creator ? { creator: { '@type': 'Person', name: movie.creator } } : {}),
         },
       ],
     });
   }
-
-  protected findMovie(movies: readonly Movie[] | null | undefined): Movie | undefined {
-    return movies?.find((m) => m.slug === this.slug);
-  }
-
-  protected universeClass(universe: string): string {
-    return universe === 'other' ? '' : `u-${universe}`;
-  }
-
-  protected universeText(universe: string): string {
-    switch (universe) {
-      case 'marvel':
-        return 'Marvel';
-      case 'dc':
-        return 'DC';
-      default:
-        return 'Multiverse';
-    }
-  }
-
   protected backToShelf(): void {
     void this.router.navigate(['/movies']);
   }
-
   protected retry(): void {
     this.moviesService.retry();
   }
