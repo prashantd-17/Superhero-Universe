@@ -6,6 +6,8 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { CURATED_MOVIES } from './app/core/data-access/movie/data/movie-data';
+import { MoviePosterCatalog } from './server/movie-posters';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -28,17 +30,23 @@ const angularApp = new AngularNodeAppEngine({
   allowedHosts: envHosts && envHosts.length > 0 ? envHosts : ['*'],
 });
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+/** Same-origin, credential-free artwork refresh; never accepts arbitrary upstream URLs. */
+const moviePosters = new MoviePosterCatalog(CURATED_MOVIES);
+app.get('/api/movie-posters', (_req, res, next) => {
+  // Do not return Angular's ZoneAwarePromise to Express as a route handler.
+  moviePosters
+    .get()
+    .then((result) => {
+      res.setHeader(
+        'Cache-Control',
+        result.source === 'live'
+          ? 'public, max-age=3600, stale-while-revalidate=86400'
+          : 'public, max-age=300',
+      );
+      res.json(result);
+    })
+    .catch(next);
+});
 
 /**
  * Serve static files from /browser
@@ -57,9 +65,7 @@ app.use(
 app.use((req, res, next) => {
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => (response ? writeResponseToNodeResponse(response, res) : next()))
     .catch(next);
 });
 
@@ -69,7 +75,7 @@ app.use((req, res, next) => {
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 4000;
-  app.listen(port, (error) => {
+  app.listen(Number(port), '0.0.0.0', (error) => {
     if (error) {
       throw error;
     }
