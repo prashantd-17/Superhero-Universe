@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Static sitemap (V1).
+  Character URLs are generated from the external API — once the site is
+  deployed, a dynamic character sitemap should be generated at build time
+  (see README → SEO). Movie slugs below are stable (curated data).
+  Replace https://superhero-universe.onrender.com with your production URL, e.g. https://superhero-universe.com
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://superhero-universe.onrender.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/lore</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/battle-arena</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/products</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/instagram</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <!-- Top character files (stable API slugs) -->
+  <url><loc>https://superhero-universe.onrender.com/characters/69-batman</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/644-superman</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/620-spider-man</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/346-iron-man</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/720-wonder-woman</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/149-captain-america</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/332-hulk</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/659-thor</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/717-wolverine</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/106-black-panther</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/655-thanos</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/370-joker</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/213-deadpool</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/687-venom</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/characters/156-captain-marvel</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <!-- Curated movie titles -->
+  <url><loc>https://superhero-universe.onrender.com/movies/iron-man</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/the-avengers</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/black-panther</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/avengers-infinity-war</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/avengers-endgame</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/spider-man-no-way-home</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/the-dark-knight</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/the-batman</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/man-of-steel</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/wonder-woman</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/aquaman</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/watchmen</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://superhero-universe.onrender.com/movies/the-boys</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
+</urlset>

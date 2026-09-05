@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://superhero-universe.onrender.com/sitemap.xml
