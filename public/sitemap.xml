@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Node server generates the complete origin-aware sitemap at this URL.
+     This static fallback intentionally contains no invented deployment URLs. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>
