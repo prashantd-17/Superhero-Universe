@@ -151,7 +151,7 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
   `,
   styles: `
     .page-head {
-      padding: 3.2rem 0 1.6rem;
+      padding: clamp(2rem, 5vw, 3.2rem) 0 clamp(1rem, 3vw, 1.6rem);
     }
 
     .title-xl {
@@ -182,8 +182,8 @@ type AlignmentFilter = 'all' | 'good' | 'bad' | 'neutral';
     .controls {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      margin: 1.4rem 0 1.8rem;
+      gap: 0.85rem;
+      margin: 1.1rem 0 1.5rem;
     }
 
     .search {

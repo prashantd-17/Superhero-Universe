@@ -254,8 +254,12 @@ interface NavLink {
     .nav-inner {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      height: 64px;
+      gap: 1rem;
+      height: 60px;
+    }
+
+    @media (min-width: 980px) {
+      .nav-inner { height: 64px; }
     }
 
     .brand {
@@ -593,23 +597,24 @@ interface NavLink {
       margin-top: auto;
     }
 
-    @media (min-width: 1200px) {
+    @media (min-width: 980px) {
       .nav-inner {
-        gap: 0.65rem;
+        gap: 0.5rem;
       }
       .link {
-        font-size: 0.76rem;
+        font-size: 0.74rem;
         letter-spacing: 0.06em;
-        padding-inline: 0.6em;
+        padding-inline: 0.55em;
       }
       .search {
         min-width: 0;
-        flex: 0 1 190px;
+        flex: 0 1 170px;
       }
       .search-input {
         min-width: 0;
         width: 100%;
         flex: 1;
+        width: 140px;
       }
       .follow-label {
         display: none;
@@ -633,10 +638,16 @@ interface NavLink {
       }
     }
 
-    @media (min-width: 1500px) {
-      .follow-label {
-        display: inline;
-      }
+    @media (min-width: 1200px) {
+      .nav-inner { gap: 0.8rem; }
+      .link { font-size: 0.8rem; padding-inline: 0.7em; }
+      .search { flex: 0 1 200px; }
+      .follow-label { display: inline; }
+    }
+
+    @media (min-width: 980px) and (max-width: 1199px) {
+      /* hide instagram label on mid-size so nav fits */
+      .follow { padding: 0.5em 0.7em; }
     }
   `,
 })

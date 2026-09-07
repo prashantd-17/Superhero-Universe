@@ -219,7 +219,7 @@ import { HOME_CONTENT } from './home-content';
   `,
   styles: `
     .section {
-      padding-block: clamp(3rem, 6vw, 4.5rem);
+      padding-block: var(--section-pad-y);
     }
 
     .head-row {
@@ -482,7 +482,7 @@ import { HOME_CONTENT } from './home-content';
 
     .final-cta {
       position: relative;
-      margin-top: 4rem;
+      margin-top: var(--section-pad-y);
       background-size: cover;
       background-position: center;
       border-top: 1px solid var(--panel-border);
@@ -498,11 +498,11 @@ import { HOME_CONTENT } from './home-content';
     .final-cta-inner {
       position: relative;
       text-align: center;
-      padding: clamp(3.5rem, 8vw, 6rem) 1.25rem;
+      padding: clamp(2.5rem, 6vw, 4rem) var(--gutter);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
     }
 
     .final-title {

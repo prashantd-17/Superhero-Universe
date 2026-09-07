@@ -89,11 +89,15 @@ import { TrackDirective } from '../../../../shared/directives/track.directive';
   styles: `
     .hero {
       position: relative;
-      min-height: min(92vh, 860px);
+      min-height: min(86vh, 760px);
       display: flex;
       align-items: center;
       overflow: hidden;
       isolation: isolate;
+    }
+
+    @media (max-width: 600px) {
+      .hero { min-height: min(82vh, 680px); }
     }
 
     .bg {
@@ -160,8 +164,8 @@ import { TrackDirective } from '../../../../shared/directives/track.directive';
 
     .hero-content {
       position: relative;
-      padding-top: 4.5rem;
-      padding-bottom: 5.5rem;
+      padding-top: clamp(3rem, 7vw, 4.5rem);
+      padding-bottom: clamp(3.5rem, 8vw, 5.5rem);
       max-width: 860px;
     }
 
