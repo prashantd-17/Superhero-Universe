@@ -300,7 +300,7 @@ import {
   `,
   styles: `
     .page-head {
-      padding: 3.2rem 0 1rem;
+      padding: clamp(2rem, 5vw, 3.2rem) 0 clamp(0.8rem, 2.5vw, 1rem);
     }
     .title-xl {
       font-family: var(--font-display);

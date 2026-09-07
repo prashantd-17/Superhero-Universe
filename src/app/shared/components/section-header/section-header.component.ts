@@ -19,7 +19,7 @@ import { RevealDirective } from '../../directives/reveal.directive';
   `,
   styles: `
     .section-head {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       max-width: 720px;
     }
 
