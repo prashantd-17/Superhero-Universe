@@ -77,21 +77,43 @@ Key decisions:
 - **Accessibility.** Skip link, semantic landmarks, focus-visible styles,
   `prefers-reduced-motion` disables all animation.
 
-## Deploy (Render)
+## Deploy (Render — Node/SSR Web Service)
 
-1. Push this repo to Git and create a **Web Service** on Render.
-2. Build command: `npm ci && npm run build` — Start command:
-   `node dist/superhero-universe/server/server.mjs`.
-   Use the Node/Express server, not just static hosting, for live poster refresh.
-3. Environment:
-   - `PORT` — set by Render automatically.
-   - `NG_ALLOWED_HOSTS` (recommended) — comma-separated production hostnames,
-     e.g. `www.yourdomain.com,yourdomain.com`. Enables Angular's SSR host
-     allowlist; without it the site accepts any host (documented in
-     `src/server.ts`).
-4. Replace the `{{ROOT}}` placeholder in `public/sitemap.xml` and
-   `public/robots.txt` with your production URL.
-5. Redeploy — the build prerenders the 6 static routes automatically.
+This app ships as an Angular **SSR** (Express) server — **not** a static site.
+The Express server renders detail pages server-side (critical for SEO), serves
+`/sitemap.xml` and `/robots.txt` dynamically with the correct origin, and
+proxies the live poster-refresh endpoint.
+
+### 1-Click blueprint
+
+A `render.yaml` is included. On Render, choose "Blueprint" and point it at this
+repo, or create a **Web Service** with these settings:
+
+| Setting        | Value                                                  |
+| -------------- | ------------------------------------------------------ |
+| Runtime        | Node                                                   |
+| Build command  | `npm ci && npm run build`                              |
+| Start command  | `node dist/superhero-universe/server/server.mjs`       |
+| Health check   | `/healthz`                                             |
+
+### Environment variables
+
+- `PORT` — set automatically by Render (the server binds `0.0.0.0:$PORT`).
+- `SITE_URL` (recommended) — your canonical public origin, e.g.
+  `https://superhero-universe.onrender.com` or your custom domain. Used for
+  canonical URLs, OG tags, `sitemap.xml` and `robots.txt`.
+- `NG_ALLOWED_HOSTS` (optional) — comma-separated extra hostnames for Angular's
+  SSR host allowlist. Leave blank to rely on `SITE_URL`.
+
+### SEO out of the box
+
+- `/sitemap.xml` is generated dynamically from the deploy origin (no `{{ROOT}}`
+  placeholders to replace).
+- `/robots.txt` is generated dynamically and points to the dynamic sitemap.
+- Character & movie detail routes render full HTML on the server
+  (`RenderMode.Server`) so Google sees their title/description/OG without
+  executing JavaScript.
+- Homepage + landing routes are prerendered at build time for fastest TTFB.
 
 ## Content & data sources (what is real, what is curated)
 

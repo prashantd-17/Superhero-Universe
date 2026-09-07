@@ -182,7 +182,7 @@ function toSuperhero(raw: RawHero): Superhero | null {
   return hero;
 }
 
-function parsePayload(payload: unknown): Superhero[] {
+export function parsePayload(payload: unknown): Superhero[] {
   if (!Array.isArray(payload)) return [];
   return payload
     .map((item) =>

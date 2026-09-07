@@ -1,14 +1,71 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { APP_CONFIG } from '../../../core/config/app-config';
 
+/**
+ * Site footer — brand block, nav columns, and a contact/newsletter band.
+ *
+ * The contact form posts to FormSubmit.co which forwards submissions to
+ * dprash77@gmail.com without a backend. The owner clicks an activation email
+ * on the first submission; after that every message lands in their inbox.
+ */
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <footer class="footer">
       <div class="container">
+        <!-- Contact / Newsletter band -->
+        <section class="newsletter" aria-labelledby="newsletter-title">
+          <div class="newsletter-copy">
+            <p class="kicker">Stay in the loop</p>
+            <h2 id="newsletter-title" class="newsletter-title">Join the signal</h2>
+            <p class="newsletter-sub">
+              Drop your email and a message — questions, feedback, collabs or a hero
+              you want profiled. I read every note.
+            </p>
+          </div>
+          <form
+            class="newsletter-form"
+            action="https://formsubmit.co/dprash77@gmail.com"
+            method="POST"
+          >
+            <input type="hidden" name="_subject" value="New message from The Superhero Universe" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_next" value="https://superhero-universe.onrender.com/instagram" />
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+
+            <label class="field">
+              <span class="sr-only">Your email</span>
+              <input
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                [(ngModel)]="email"
+                [ngModelOptions]="{ standalone: true }"
+                required
+                autocomplete="email"
+              />
+            </label>
+            <label class="field field-message">
+              <span class="sr-only">Your message</span>
+              <textarea
+                name="message"
+                rows="2"
+                placeholder="Say hello, request a character, share feedback…"
+                [(ngModel)]="message"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              ></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary">Send message</button>
+            <p class="newsletter-hint">No spam — one reply per message, straight to my inbox.</p>
+          </form>
+        </section>
+
         <div class="grid">
           <div class="col col-brand">
             <div class="brand">
@@ -77,19 +134,107 @@ import { APP_CONFIG } from '../../../core/config/app-config';
     .footer {
       border-top: 1px solid var(--panel-border);
       background: linear-gradient(180deg, rgba(7, 10, 18, 0.4), rgba(4, 6, 11, 0.9));
-      margin-top: 4rem;
+      margin-top: var(--section-pad-y, 3rem);
+    }
+
+    .newsletter {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      padding: clamp(1.75rem, 4vw, 2.5rem) 0;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    @media (min-width: 900px) {
+      .newsletter {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+        align-items: center;
+        gap: 2.5rem;
+      }
+    }
+
+    .newsletter-copy .kicker { margin-bottom: 0.6rem; }
+
+    .newsletter-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.35rem, 3vw, 1.9rem);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin: 0 0 0.5rem;
+    }
+
+    .newsletter-sub {
+      color: var(--text-1);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin: 0;
+      max-width: 44ch;
+    }
+
+    .newsletter-form {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    @media (min-width: 600px) {
+      .newsletter-form { grid-template-columns: 1fr 1fr; }
+      .field-message,
+      .newsletter-form .btn,
+      .newsletter-hint { grid-column: 1 / -1; }
+    }
+
+    .field { display: block; }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+      background: rgba(10, 14, 22, 0.7);
+      color: var(--text-0);
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      resize: vertical;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field textarea { min-height: 70px; line-height: 1.5; }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--text-2); }
+
+    .field input:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: rgba(56, 225, 255, 0.55);
+      box-shadow: 0 0 0 3px rgba(56, 225, 255, 0.15);
+    }
+
+    .newsletter-form .btn { justify-self: start; min-width: 180px; }
+
+    .newsletter-hint {
+      color: var(--text-2);
+      font-size: 0.78rem;
+      margin: 0;
     }
 
     .grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
-      padding: 3rem 0 2rem;
+      gap: 1.75rem;
+      padding: 2.25rem 0 1.5rem;
     }
 
     @media (min-width: 640px) {
       .grid {
-        grid-template-columns: 1.4fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1000px) {
+      .grid {
+        grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
       }
     }
 
@@ -128,14 +273,13 @@ import { APP_CONFIG } from '../../../core/config/app-config';
       letter-spacing: 0.04em;
     }
 
-    .ig:hover {
-      text-decoration: underline;
-    }
+    .ig:hover { text-decoration: underline; }
 
     .col {
       display: flex;
       flex-direction: column;
-      gap: 0.55rem;
+      gap: 0.5rem;
+      min-width: 0;
     }
 
     .col a {
@@ -145,9 +289,7 @@ import { APP_CONFIG } from '../../../core/config/app-config';
       transition: color 0.2s ease;
     }
 
-    .col a:hover {
-      color: var(--text-0);
-    }
+    .col a:hover { color: var(--text-0); }
 
     .col-title {
       font-family: var(--font-ui);
@@ -169,7 +311,7 @@ import { APP_CONFIG } from '../../../core/config/app-config';
       flex-direction: column;
       gap: 0.3rem;
       border-top: 1px solid var(--panel-border);
-      padding: 1.4rem 0 1.8rem;
+      padding: 1.1rem 0 1.5rem;
     }
 
     .bottom p {
@@ -189,4 +331,6 @@ import { APP_CONFIG } from '../../../core/config/app-config';
 export class FooterComponent {
   protected readonly config = inject(APP_CONFIG);
   protected readonly year = new Date().getFullYear();
+  protected email = '';
+  protected message = '';
 }

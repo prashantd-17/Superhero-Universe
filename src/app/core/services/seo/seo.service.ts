@@ -3,6 +3,7 @@ import { APP_BASE_HREF, DOCUMENT } from '@angular/common';
 import { Meta, MetaDefinition, Title } from '@angular/platform-browser';
 import { APP_CONFIG } from '../../config/app-config';
 import { SeoConfig } from '../../models/seo';
+import { SITE_CONTEXT } from './site-context';
 
 const JSON_LD_ID = 'app-jsonld';
 
@@ -19,6 +20,7 @@ export class SeoService {
   private readonly meta = inject(Meta);
   private readonly baseHref = inject(APP_BASE_HREF);
   private readonly config = inject(APP_CONFIG);
+  private readonly site = inject(SITE_CONTEXT);
   // Injected DOCUMENT (not the global `document`): resolves to the real DOM
   // on the client and to the domino document under SSR/prerender, where no
   // browser globals exist.
@@ -27,7 +29,7 @@ export class SeoService {
   apply(seo: SeoConfig): void {
     const brand = this.config.brand.name;
     const fullTitle = seo.title.includes(brand) ? seo.title : `${seo.title} · ${brand}`;
-    const url = this.buildUrl(seo.path);
+    const url = this.absoluteUrl(seo.path);
 
     this.title.setTitle(fullTitle);
 
@@ -61,10 +63,11 @@ export class SeoService {
     this.applyJsonLd(seo.jsonLd ?? []);
   }
 
-  private buildUrl(path: string): string {
-    const base = this.baseHref.endsWith('/') ? this.baseHref : `${this.baseHref}/`;
+  /** Build an absolute URL for the current site (uses canonical origin from SiteContext). */
+  absoluteUrl(path: string): string {
+    const origin = this.site.origin.replace(/\/+$/, '');
     const clean = path.startsWith('/') ? path : `/${path}`;
-    return `${base}${clean.replace(/^\/+/, '')}`;
+    return `${origin}${clean.replace(/^\/+/, '/')}`;
   }
 
   private applyJsonLd(blocks: readonly Record<string, unknown>[]): void {

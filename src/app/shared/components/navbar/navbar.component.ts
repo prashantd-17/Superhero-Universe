@@ -207,7 +207,12 @@ interface NavLink {
       display: flex;
       align-items: center;
       gap: 1.25rem;
-      height: 64px;
+      height: 60px;
+    }
+
+    @media (max-width: 600px) {
+      .nav-inner { height: 54px; gap: 0.75rem; }
+      .brand-text { display: none; }
     }
 
     .brand {

@@ -217,7 +217,7 @@ interface VoteTally {
   `,
   styles: `
     .page-head {
-      padding: 3.2rem 0 1.6rem;
+      padding: clamp(2rem, 5vw, 3.2rem) 0 clamp(1rem, 3vw, 1.6rem);
     }
 
     .title-xl {
