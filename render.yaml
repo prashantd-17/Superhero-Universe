@@ -1,0 +1,33 @@
+# Render blueprint for The Superhero Universe.
+#
+# This is an Angular SSR (Node/Express) Web Service, NOT a static site.
+# Deploy: push to `main` on GitHub; Render will build with npm and run the
+# Express server from dist/superhero-universe/server/server.mjs.
+#
+# Required env vars (set in Render dashboard → Environment):
+#   SITE_URL   — canonical public origin, e.g. https://superhero-universe.onrender.com
+services:
+  - type: web
+    name: superhero-universe
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/superhero-universe/server/server.mjs
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      # Canonical origin used for SEO tags, sitemap, robots. Replace with your
+      # custom domain if you point one at this service.
+      - key: SITE_URL
+        value: https://superhero-universe.onrender.com
+      # Optional: comma-separated extra hostnames the Node server should answer
+      # for (used by @angular/ssr's host allowlist). Leave blank for default.
+      - key: NG_ALLOWED_HOSTS
+        value: ""
+    autoDeploy: true
+    pullRequestPreviewsEnabled: true

@@ -32,7 +32,8 @@
   --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
 
   /* layout */
-  --gutter: 1.25rem;
+  --gutter: clamp(0.9rem, 3vw, 1.5rem);
+  --section-pad-y: clamp(2.25rem, 5vw, 4rem);
   --radius: 14px;
 }
 
@@ -290,4 +291,18 @@ button {
 /* images & long words must never cause horizontal overflow on mobile */
 img {
   max-width: 100%;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
+/* tighten scroll snap + avoid overshoot gaps on iOS */
+main {
+  overflow-x: hidden;
 }
